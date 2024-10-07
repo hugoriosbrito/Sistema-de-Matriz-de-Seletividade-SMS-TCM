@@ -1,14 +1,13 @@
-import tkinter as tk
+import xlwings as xw
 
-root = tk.Tk()
+wb = xw.Book('Matriz modelo - REV3.xlsx')
+sheet = wb.sheets['SÍNTESE MUN.']
 
+valor1 = 'NÃO'
+valor2 = 'NÃO'
 
-def toggle():
-    ninja_button.pack()
+valores = sheet['G14'].value = 'SIM'
+wb.save()
+print(valores)
 
-
-ninja_button = tk.Button(root, text='Aha!')
-visible_button = tk.Button(root, text='Show', command=toggle)
-visible_button.pack()
-
-root.mainloop()
+wb.close()
