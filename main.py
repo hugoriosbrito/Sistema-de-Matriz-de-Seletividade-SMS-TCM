@@ -1,15 +1,21 @@
-import openpyxl
-import xlwings as xw
+import openpyxl as xl
 import customtkinter as ctk
 from tkinter import messagebox
+import tkinter as tk
+from tkinter import ttk
 import os
+import time
 
-file = "dados\\Matriz modelo - REV3 - Otimizado.xlsx"
-app = xw.App(visible=False)
-wb = app.books.open(file, read_only=False)
-sheet = wb.sheets['SÍNTESE MUN.']
-wb.autosave = True
-wb.autosave_interval = 1
+#corrigir falhas em relação a migração de arquivo base
+#adicionar os outros indicadores com respectivas funcionalidades
+#adicionar distribuição de peso por tipo
+#adicionar validações de distribuição
+#adicionar restante das porcentagens
+
+
+file = "dados\\Matriz modelo - VERSÃO SISTEMA.xlsx"
+wb = xl.load_workbook(file, )
+sheet = wb['SÍNTESE']
 
 
 class xlsx:
@@ -45,62 +51,71 @@ class MainWindow:
         ctk.set_default_color_theme("dark-blue")
         window.configure(fg_color="#3C91E6")
 
-def textos():
+def titulo():
     fonte_titulo = ctk.CTkFont(family='Arial', size=50, weight='bold')
     titulo = ctk.CTkLabel(window, text="Indicadores", font=fonte_titulo, anchor="center", corner_radius=20, text_color="white")
     titulo.pack(pady=20, padx=20, anchor="center")  # Pequeno espaçamento nas laterais do título
 
-textos()
+titulo()
 
-frame = ctk.CTkScrollableFrame(master=window, border_width=0, corner_radius=2, bg_color="#2F83D7", fg_color="#2F83D7", height=600)
-frame.pack(fill='both', padx=20, pady=20)
+frame_dist_peso = ctk.CTkFrame(master=window, border_width=0, corner_radius=20, bg_color="#2F83D7", fg_color="#2F83D7", height=50)
+frame_dist_peso.pack(fill = 'both', padx = 20)
+
+frame = ctk.CTkScrollableFrame(master=window, border_width=0, corner_radius=20, bg_color="#2F83D7", fg_color="#2F83D7", height=600)
+frame.pack(fill='both', padx=20, pady=10)
+
+#Alterações na distribuição de peso
+
+def alterar_distribuicao():
+    pass
+def distribuicao():
+    distribuicao_fonte = ctk.CTkFont(family='Arial', size=15, weight='bold')
+    distribuicao_titulo = ctk.CTkLabel(master=frame_dist_peso, text= "Distribuição de peso por tipo: ", font=distribuicao_fonte, text_color='white', corner_radius=20)
+    distribuicao_titulo.grid(padx=10,pady=10, row = 0, column=0)
+
+    tipo_risco_titulo = ctk.CTkLabel(master=frame_dist_peso, text= "Risco", text_color='white', corner_radius=20)
+    tipo_risco_box = ttk.Combobox(master= frame_dist_peso, values=["Definir (%)", "5","10","15","20","25","30","35","40"])
+    tipo_risco_titulo.grid(padx=5,pady=5, row= 0, column=1)
+    tipo_risco_box.grid(padx=10,pady=10, row=1, column=1)
+
+distribuicao()
 
 # -------------------------------------------- BLOCOS DE INDICADORES --------------------------------------------------------------
 
 def bloco_indicadores():
-    tipos = [
-    'RISCO',
-    'MATERIALIDADE',
-    'RELEVÂNCIA',
-    'OPORTUNIDADE']
+
+    fonte_colunas = ctk.CTkFont(family='Arial', size=15, weight='bold')
+    
+    coluna_risco = ctk.CTkLabel(master=frame, text= "RISCO", font=fonte_colunas, text_color='white', corner_radius=20)
+    coluna_risco.grid(padx=20,pady=5,row=0,column=0)
+
+    coluna_relevancia = ctk.CTkLabel(master=frame, text= "RELEVÂNCIA", font=fonte_colunas, text_color='white', corner_radius=20)
+    coluna_relevancia.grid(padx=20,pady=5,row=0,column=1)
+
+    coluna_materialidade = ctk.CTkLabel(master=frame, text= "MATERIALIDADE", font=fonte_colunas, text_color='white', corner_radius=20)
+    coluna_materialidade.grid(padx=20,pady=5,row=0,column=2)
+
+    coluna_oportunidade = ctk.CTkLabel(master=frame, text= "OPORTUNIDADE", font=fonte_colunas, text_color='white', corner_radius=20)
+    coluna_oportunidade.grid(padx=20,pady=5,row=0,column=3)
+
+
+#TIPOS DE RISCO PRIMEIRA COLUNA
 
     # HISTÓRICO PARECER PRÉVIO (ÚLTIMOS 3 ANOS)
     indicador1_frame = ctk.CTkFrame(frame, fg_color="#FAFFFD", corner_radius=10)
     indicador1_frame.grid(padx=20, pady=10, sticky="nsew")
-
-    # Variáveis globais para os widgets
-    global indicador1_text, respostaIndicador1
-    indicador1_text = ctk.CTkLabel(indicador1_frame, text=f"Quanto maior HISTÓRICO PARECER PRÉVIO (ÚLTIMOS 3 ANOS) maior {tipos[0]} ?", text_color="black", corner_radius=20, anchor="w")
-    respostaIndicador1 = ctk.CTkComboBox(indicador1_frame, values=["Sim", "Não"], command=lambda resp: print(f"Valor selecionado no ComboBox (Histórico): {resp}"))
-
-    # Inicializa a visibilidade dos widgets como "não visíveis"
-    indicador1_text.grid_forget()
-    respostaIndicador1.grid_forget()
 
     # Botão Switch event
     def botao_switch1_event():
         print("Switch 1 toggled, current value:", switch1_var.get())
         switch1.configure(text=f"Habilitar? ({switch1_var.get()})")
 
-        if  switch1_var.get() == 'SIM':
-            sheet.range('G11').value = 'SIM'
-        else:
-            sheet.range('G11').value = 'NÃO'
-
-        # Altera a visibilidade dos widgets
+        # Habilitar/Desabilitar indicador
         if switch1_var.get() == "SIM":
-            indicador1_text.grid(pady=5, sticky="w")
-            respostaIndicador1.grid(padx=10, pady=5, sticky="w")
-
-            if respostaIndicador1.get() == "Sim":
-                sheet.range('J11').value = 'CRESCENTE'
-            else:
-                sheet.range('J11').value = 'DECRESCENTE'
-
+            sheet['F11'] = 'SIM'
         else:
-            indicador1_text.grid_forget()
-            respostaIndicador1.grid_forget()
-            
+            sheet['F11'] = 'NÃO'
+
     # Título indicador
     indicador1_title = ctk.CTkLabel(indicador1_frame, text="HISTÓRICO PARECER PRÉVIO (ÚLTIMOS 3 ANOS)", text_color="black", corner_radius=20, anchor="w")
     indicador1_title.grid(pady=5, sticky="w")  # Alinhado à esquerda
@@ -108,6 +123,7 @@ def bloco_indicadores():
     # Switch referente ao indicador
     switch1_var = ctk.StringVar(value="NÃO")
     switch1 = ctk.CTkSwitch(indicador1_frame, text=f"Habilitar? ({switch1_var.get()})", command=botao_switch1_event, variable=switch1_var, onvalue="SIM", offvalue="NÃO", text_color="black")
+    botao_switch1_event()
     switch1.grid(padx=10, pady=5, sticky="w")  # Adicionando padx
 
 
@@ -115,70 +131,71 @@ def bloco_indicadores():
     indicador2_frame = ctk.CTkFrame(frame, fg_color="#FAFFFD", corner_radius=10)
     indicador2_frame.grid(padx=20, pady=10, sticky="nsew")
 
-    # Variáveis globais para os widgets do segundo indicador
-    global indicador2_text, respostaIndicador2
-    indicador2_text = ctk.CTkLabel(indicador2_frame, text="Quanto maior DATA ÚLTIMA AUDITORIA (3DCE) maior (tipo)?", text_color="black", corner_radius=20, anchor="w")
-    respostaIndicador2 = ctk.CTkComboBox(indicador2_frame, values=["Sim", "Não"], command=lambda resp: print(f"Valor selecionado no ComboBox (Auditoria): {resp}"))
-
-    # Inicializa a visibilidade dos widgets como "não visíveis"
-    indicador2_text.grid_forget()
-    respostaIndicador2.grid_forget()
-
     def botao_switch2_event():
         print("Switch 2 toggled, current value:", switch2_var.get())
         switch2.configure(text=f"Habilitar? ({switch2_var.get()})")
 
-        # Altera a visibilidade dos widgets
+        # Habilitar/Desabilitar indicador
         if switch2_var.get() == "SIM":
-            indicador2_text.grid(pady=5, sticky="w")
-            respostaIndicador2.grid(padx=10, pady=5, sticky="w")
+            sheet['F12'] = 'SIM'
         else:
-            indicador2_text.grid_forget()
-            respostaIndicador2.grid_forget()
+            sheet["F12"] = 'NÃO'
 
     indicador2_title = ctk.CTkLabel(indicador2_frame, text="DATA ÚLTIMA AUDITORIA (3DCE)", text_color="black", corner_radius=20, anchor="w")
     indicador2_title.grid(pady=5, sticky="w")
 
     switch2_var = ctk.StringVar(value="NÃO")
     switch2 = ctk.CTkSwitch(indicador2_frame, text=f"Habilitar? ({switch2_var.get()})", command=botao_switch2_event, variable=switch2_var, onvalue="SIM", offvalue="NÃO", text_color="black")
-    switch2.grid(padx=10, pady=5, sticky="w")  # Adicionando padx
+    botao_switch2_event()
+    switch2.grid(padx=10, pady=5, sticky="w") 
 
     # POSIÇÃO - QTDE DE DÉBITO/MULTAS
     indicador3_frame = ctk.CTkFrame(frame, fg_color="#FAFFFD", corner_radius=10)
     indicador3_frame.grid(padx=20, pady=10, sticky="nsew")
-
-    # Variáveis globais para os widgets do terceiro indicador
-    global indicador3_text, respostaIndicador3
-    indicador3_text = ctk.CTkLabel(indicador3_frame, text="Quanto maior POSIÇÃO - QTDE DE DÉBITO/MULTAS maior (tipo)?", text_color="black", corner_radius=20, anchor="w")
-    respostaIndicador3 = ctk.CTkComboBox(indicador3_frame, values=[ "Sim", "Não"], command=lambda resp: print(f"Valor selecionado no ComboBox (Débito/Multas): {resp}"))
-
-    # Inicializa a visibilidade dos widgets como "não visíveis"
-    indicador3_text.grid_forget()
-    respostaIndicador3.grid_forget()
 
     def botao_switch3_event():
         print("Switch 3 toggled, current value:", switch3_var.get())
         switch3.configure(text=f"Habilitar? ({switch3_var.get()})")
 
         if switch3_var.get() == "SIM":
-            indicador3_text.grid(pady=5, sticky="w")
-            respostaIndicador3.grid(padx=10, pady=5, sticky="w")
+          sheet['F13'] = 'SIM'
         else:
-            indicador3_text.grid_forget()
-            respostaIndicador3.grid_forget()
+          sheet['F13'] = 'NÃO'
 
     indicador3_title = ctk.CTkLabel(indicador3_frame, text="POSIÇÃO - QTDE DE DÉBITO/MULTAS", text_color="black", corner_radius=20, anchor="w")
     indicador3_title.grid(pady=5, sticky="w")
 
     switch3_var = ctk.StringVar(value="NÃO")
     switch3 = ctk.CTkSwitch(indicador3_frame, text=f"Habilitar? ({switch3_var.get()})", command=botao_switch3_event, variable=switch3_var, onvalue="SIM", offvalue="NÃO", text_color="black")
-    switch3.grid(padx=10, pady=5, sticky="w")  # Adicionando padx
+    botao_switch3_event()
+    switch3.grid(padx=10, pady=5, sticky="w") 
+
+
+#TIPOS DE RELEVÂNCIA SEGUNDA COLUNA
+
+    # POSIÇÃO - POPULAÇÃO MUNICÍPIO
+    indicador4_frame = ctk.CTkFrame(frame, fg_color="#FAFFFD", corner_radius=10)
+    indicador4_frame.grid(padx=20, pady=10, sticky="nsew",column=1, row= 1)
+
+    def botao_switch4_event():
+        print("Switch 4 toggled, current value:", switch3_var.get())
+        switch4.configure(text=f"Habilitar? ({switch3_var.get()})")
+
+        if switch4_var.get() == "SIM":
+          sheet['F17'] = 'SIM'
+        else:
+          sheet['F17'] = 'NÃO'
+
+    indicador4_title = ctk.CTkLabel(indicador4_frame, text="POSIÇÃO - POPULAÇÃO MUNICÍPIO", text_color="black", corner_radius=20, anchor="w")
+    indicador4_title.grid(padx=10,pady=5, sticky="w")
+
+    switch4_var = ctk.StringVar(value="NÃO")
+    switch4 = ctk.CTkSwitch(indicador4_frame, text=f"Habilitar? ({switch4_var.get()})", command=botao_switch4_event, variable=switch4_var, onvalue="SIM", offvalue="NÃO", text_color="black")
+    botao_switch4_event()
+    switch4.grid(padx=10, pady=5, sticky="w") 
 
 
 # -------------------------------------------- FIM DO BLOCO DE INDICADORES ---------------------------------------------------------------
-
-#lista para verificações
-#respostasComboBox = [respostaIndicador1,respostaIndicador2,respostaIndicador3]
 
 #-----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -191,7 +208,8 @@ class Botao:
             print("Botão salvar clicado")
             wb.save(file)
             messagebox.showinfo("Sucesso", "Alterações salvas com sucesso!", icon='info')
-            wb.close()
+
+            
 
     def botao_visualizar_dashboard_config(frame):
         botao_visualizar = ctk.CTkButton(frame, text="Visualizar Dashboard", command=Botao.botao_visualizar_dashboard_event)
@@ -205,9 +223,6 @@ class Botao:
 def main():
     caminho = xlsx.xlsx_state(self=xlsx)
     print(caminho)
-
-    #inicialização padrão das células
-    sheet['G11:G30'].value = 'NÃO'
 
     # Adicionando o bloco de indicadores
     bloco_indicadores()
