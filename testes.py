@@ -1,18 +1,11 @@
 import openpyxl as xl
-import xlwings as xw
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 
-wb = xw.Book('dados\\Matriz modelo - REV3 - Otimizado.xlsx')
-sheet = wb.sheets['SÍNTESE MUN.']
+df = pd.read_excel('dados\\Matriz Modelo - VERSÃO SISTEMA.xlsx', sheet_name='MATRIZ CONTRATOS')
 
-lista = ['SIM','NÃO','NÃO', 'SIM']
+df2 = df.copy()[6:]
+print(df2)
 
-sheet.range('G11:G14').value = lista
-
-try:
-    wb.save('dados\\Matriz modelo - REV3 - Otimizado.xlsx')
-    print(sheet['G11:G14'])
-    print('salvo com sucesso')
-except Exception as e:
-    print(f'Erro: {e}')
-
-wb.close()
+#coluna 35

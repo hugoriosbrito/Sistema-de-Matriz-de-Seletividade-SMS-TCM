@@ -1,8 +1,6 @@
 import openpyxl as xl
 import customtkinter as ctk
 from tkinter import messagebox
-import tkinter as tk
-from tkinter import ttk
 import os
 
 #adicionar validações de distribuição
@@ -41,9 +39,12 @@ window = ctk.CTk()
 class MainWindow:
     def window_config(window):
         window.geometry("800x600")
-        ctk.set_appearance_mode("dark")  # Modo de aparência escuro
+        ctk.set_appearance_mode("light")  # Modo de aparência escuro
         ctk.set_default_color_theme("dark-blue")
         window.configure(fg_color="#3C91E6")
+        window.title("Sistema de Gerenciamento de Indicadores")
+        window.iconbitmap("src\\icon.ico")
+        window.after(0, lambda:window.state('zoomed'))
 
 def titulo():
     fonte_titulo = ctk.CTkFont(family='Arial', size=40, weight='bold')
@@ -70,7 +71,7 @@ frame.grid_columnconfigure(3,weight=1)
 
 
 distribuicao_fonte = ctk.CTkFont(family='Arial', size=15, weight='bold')
-distribuicao_titulo = ctk.CTkLabel(master=frame_dist_peso, text= "\nDistribuição de peso \n por tipo ", font=distribuicao_fonte, text_color='white', corner_radius=20, anchor="center")
+distribuicao_titulo = ctk.CTkLabel(master=frame_dist_peso, text= "Distribuição de peso \n por tipo ", font=distribuicao_fonte, text_color='white', corner_radius=20, anchor="center")
 distribuicao_titulo.grid(padx=(20,20),pady=10, row = 0, column=0)
 valores = ["Definir (%)", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100"]
 
@@ -115,29 +116,29 @@ def salvar_indicadores(value):
       return indicadores_pesos
 
 
-tipo_risco_titulo = ctk.CTkLabel(master=frame_dist_peso, text= "\nRisco (%)", text_color='white', corner_radius=10, font= tipos_fonte)
+tipo_risco_titulo = ctk.CTkLabel(master=frame_dist_peso, text= "Risco (%)", text_color='white', corner_radius=10, font= tipos_fonte)
 tipo_risco_var = ctk.IntVar(value=0)
 tipo_risco_box = ctk.CTkOptionMenu(master= frame_dist_peso, values=valores, width=100,height=20, fg_color="white", text_color="black", command=salvar_indicadores, variable=tipo_risco_var)
 tipo_risco_titulo.grid(padx=10,pady=5, row= 0, column=1)
-tipo_risco_box.grid(padx=10,pady=(0,5), row=1, column=1)
+tipo_risco_box.grid(padx=10,pady=5, row=1, column=1)
 
-tipo_relevancia_titulo = ctk.CTkLabel(master=frame_dist_peso, text= "\nRelevância (%)", text_color='white', corner_radius=10, font= tipos_fonte)
+tipo_relevancia_titulo = ctk.CTkLabel(master=frame_dist_peso, text= "Relevância (%)", text_color='white', corner_radius=10, font= tipos_fonte)
 tipo_relevancia_var = ctk.IntVar(value=0)
 tipo_relevancia_box = ctk.CTkOptionMenu(master= frame_dist_peso, values=valores, width=100,height=20, fg_color="white", text_color="black", command=salvar_indicadores, variable=tipo_relevancia_var)
 tipo_relevancia_titulo.grid(padx=10,pady=5, row= 0, column=2)
-tipo_relevancia_box.grid(padx=10,pady=(0,5), row=1, column=2)
+tipo_relevancia_box.grid(padx=10,pady=5, row=1, column=2)
 
-tipo_materialidade_titulo = ctk.CTkLabel(master=frame_dist_peso, text= "\nMaterialidade (%)", text_color='white', corner_radius=10, font= tipos_fonte)
+tipo_materialidade_titulo = ctk.CTkLabel(master=frame_dist_peso, text= "Materialidade (%)", text_color='white', corner_radius=10, font= tipos_fonte)
 tipo_materialidade_var = ctk.IntVar(value=0)
 tipo_materialidade_box = ctk.CTkOptionMenu(master= frame_dist_peso, values=valores, width=100,height=20, fg_color="white", text_color="black", command=salvar_indicadores,variable=tipo_materialidade_var)
 tipo_materialidade_titulo.grid(padx=10,pady=5, row= 0, column=3)
-tipo_materialidade_box.grid(padx=10,pady=(0,10), row=1, column=3)
+tipo_materialidade_box.grid(padx=10,pady=5, row=1, column=3)
 
-tipo_oportunidade_titulo = ctk.CTkLabel(master=frame_dist_peso, text= "\nOportunidade (%)", text_color='white', corner_radius=10, font= tipos_fonte)
+tipo_oportunidade_titulo = ctk.CTkLabel(master=frame_dist_peso, text= "Oportunidade (%)", text_color='white', corner_radius=10, font= tipos_fonte)
 tipo_oportunidade_var = ctk.IntVar(value=0)
 tipo_oportunidade_box = ctk.CTkOptionMenu(master= frame_dist_peso, values=valores, width=100,height=20, fg_color="white", text_color="black", command=salvar_indicadores,variable=tipo_oportunidade_var)
 tipo_oportunidade_titulo.grid(padx=10,pady=5, row= 0, column=4)
-tipo_oportunidade_box.grid(padx=10,pady=(0,5), row=1, column=4)
+tipo_oportunidade_box.grid(padx=10,pady=5, row=1, column=4)
 
 frame_dist_peso.columnconfigure(1,weight=1)
 frame_dist_peso.columnconfigure(2,weight=1)
@@ -149,7 +150,7 @@ frame_dist_peso.columnconfigure(4,weight=1)
 
 def bloco_indicadores():
 
-    fonte_colunas = ctk.CTkFont(family='Arial', size=15, weight='bold')
+    fonte_colunas = ctk.CTkFont(family='Arial', size=15, weight='bold',)
     
     coluna_risco = ctk.CTkLabel(master=frame, text= "RISCO", font=fonte_colunas, text_color='white', corner_radius=20)
     coluna_risco.grid(padx=10,pady=5,row=0,column=0)
@@ -512,13 +513,16 @@ def bloco_indicadores():
 # -------------------------------------------- FIM DO BLOCO DE INDICADORES ---------------------------------------------------------------
 
 #-----------------------------------------------------------------------------------------------------------------------------------------
+
+
+#-----------------------------------------------------------------------------------------------------------------------------------------
 fonte_botao=ctk.CTkFont("Arial",size=15,weight='bold')
 
 
 
 class Botao:
     def botao_salvar_config(frame_botoes):
-        botao_salvar = ctk.CTkButton(frame_botoes, text="Salvar", command=Botao.botao_salvar_event, font = fonte_botao)
+        botao_salvar = ctk.CTkButton(frame_botoes, text="Salvar", command=Botao.botao_salvar_event, font = fonte_botao, fg_color="#2F83D7")
         botao_salvar.grid(pady=(10, 10), padx=20, sticky="w",row=10, column=0)  
 
     def botao_salvar_event():
@@ -530,11 +534,12 @@ class Botao:
               messagebox.showerror("Erro", "Houve um erro ao salvar as alterações!\nVerifique se a soma de porcentagens é igual a 100%.", icon='error')
 
     def botao_visualizar_dashboard_config(frame_botoes):
-        botao_visualizar = ctk.CTkButton(frame_botoes, text="Visualizar Dashboard", command=Botao.botao_visualizar_dashboard_event, font=fonte_botao)
+        botao_visualizar = ctk.CTkButton(frame_botoes, text="Visualizar Dashboard", command=Botao.botao_visualizar_dashboard_event, font=fonte_botao, fg_color="#2F83D7")
         botao_visualizar.grid(pady=(10, 10), padx=20, sticky="w",row=10,column=1)  
 
     def botao_visualizar_dashboard_event():
-        print("Visualizar Dashboard clicado")
+        
+        frame.destroy()
 
 
 
