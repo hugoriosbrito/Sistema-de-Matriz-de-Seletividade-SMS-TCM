@@ -68,60 +68,82 @@ frame.grid_columnconfigure(3,weight=1)
 
 #Alterações na distribuição de peso
 
+
+distribuicao_fonte = ctk.CTkFont(family='Arial', size=15, weight='bold')
+distribuicao_titulo = ctk.CTkLabel(master=frame_dist_peso, text= "\nDistribuição de peso \n por tipo ", font=distribuicao_fonte, text_color='white', corner_radius=20, anchor="center")
+distribuicao_titulo.grid(padx=(20,20),pady=10, row = 0, column=0)
+valores = ["Definir (%)", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100"]
+
+tipos_fonte = ctk.CTkFont(family='Arial', size= 15, weight= "bold")
+# todas as vezes que um valor é escolhido em um  combo, ele é adicionado à uma lista e somado para verificação, mensagem de verificação
+# apenas para quando a lista tiver 4 elementos
+# se a soma for igual a 100, a mensagem é de sucesso, e é salvo, se não, a mensagem é de erro apenas sem salvamento
+
 def validar_distribuicao():
-    pass
-def distribuicao():
-    distribuicao_fonte = ctk.CTkFont(family='Arial', size=15, weight='bold')
-    distribuicao_titulo = ctk.CTkLabel(master=frame_dist_peso, text= "\nDistribuição de peso \n por tipo ", font=distribuicao_fonte, text_color='white', corner_radius=20, anchor="center")
-    distribuicao_titulo.grid(padx=(20,20),pady=10, row = 0, column=0)
-    valores = ["Definir (%)", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100"]
+  list_pesos = salvar_indicadores(value=0)
+  if sum(list_pesos) == 100: 
+    return True
+  else:
+    return False   
 
-    tipos_fonte = ctk.CTkFont(family='Arial', size= 15, weight= "bold")
+def salvar_indicadores(value):
+      tipo_risco = tipo_risco_var.get()
+      tipo_relevancia = tipo_relevancia_var.get()
+      tipo_materialidade = tipo_materialidade_var.get()
+      tipo_oportunidade = tipo_oportunidade_var.get()
 
-    '''def salvar_indicadores():
-        indicadores_pesos= {
-           'F4':int(tipo_risco_box.get()),
-           'F5':int(tipo_relevancia_box.get()),
-           'F6':int(tipo_materialidade_box.get()),
-           'F7':int(tipo_oportunidade_box.get()),
-        }
-        if validar_distribuicao(indicadores_pesos) == False:
-    '''
-    '''def set_risco():
-       risco = risco.get()'''
+      indicadores_pesos = [tipo_risco, tipo_relevancia, tipo_materialidade, tipo_oportunidade]
 
+      distribuicao_aviso_frame = ctk.CTkFrame(frame_dist_peso, corner_radius=10)
+      distribuicao_aviso_fonte = ctk.CTkFont(family='Arial', size=12, weight='bold')
+      distribuicao_aviso_titulo = ctk.CTkLabel(master=distribuicao_aviso_frame, text= "", font=distribuicao_aviso_fonte, text_color='white', corner_radius=0, anchor="center")
+      distribuicao_aviso_titulo.grid(padx=(20,20),pady=10, row = 0, column=0)
+      distribuicao_aviso_frame.grid(padx=(10,10),pady=10, row = 1, column=0)
+      
+      if sum(indicadores_pesos) != 100:
+        distribuicao_aviso_titulo.configure(text_color = "#5C492C", text = "Soma de porcentagens\n diferente de 100%!")
+        distribuicao_aviso_frame.configure(fg_color = "#FDC57F")
+      else:
+        distribuicao_aviso_titulo.configure(text_color = "#1B5E2E", text = "Soma de porcentagens\n igual a 100%")
+        distribuicao_aviso_frame.configure(fg_color = "#3CE270")
 
-    tipo_risco_titulo = ctk.CTkLabel(master=frame_dist_peso, text= "\nRisco", text_color='white', corner_radius=10, font= tipos_fonte)
-    tipo_risco_var = ctk.IntVar()
-    tipo_risco_box = ctk.CTkOptionMenu(master= frame_dist_peso, values=valores, width=100,height=20, fg_color="white", text_color="black")
-    tipo_risco_titulo.grid(padx=10,pady=5, row= 0, column=1)
-    tipo_risco_box.grid(padx=10,pady=(0,5), row=1, column=1)
+      sheet['F4'] = tipo_risco/100
+      sheet['F5'] = tipo_materialidade/100
+      sheet['F6'] = tipo_relevancia/100
+      sheet['F7'] = tipo_oportunidade/100
 
-    tipo_relevancia_titulo = ctk.CTkLabel(master=frame_dist_peso, text= "\nRelevância", text_color='white', corner_radius=10, font= tipos_fonte)
-    tipo_relevancia_box = ctk.CTkOptionMenu(master= frame_dist_peso, values=valores, width=100,height=20, fg_color="white", text_color="black")
-    tipo_relevancia_titulo.grid(padx=10,pady=5, row= 0, column=2)
-    tipo_relevancia_box.grid(padx=10,pady=(0,5), row=1, column=2)
-
-    tipo_materialidade_titulo = ctk.CTkLabel(master=frame_dist_peso, text= "\nMaterialidade", text_color='white', corner_radius=10, font= tipos_fonte)
-    tipo_materialidade_box = ctk.CTkOptionMenu(master= frame_dist_peso, values=valores, width=100,height=20, fg_color="white", text_color="black")
-    tipo_materialidade_titulo.grid(padx=10,pady=5, row= 0, column=3)
-    tipo_materialidade_box.grid(padx=10,pady=(0,10), row=1, column=3)
-
-    tipo_oportunidade_titulo = ctk.CTkLabel(master=frame_dist_peso, text= "\nOportunidade", text_color='white', corner_radius=10, font= tipos_fonte)
-    tipo_oportunidade_box = ctk.CTkOptionMenu(master= frame_dist_peso, values=valores, width=100,height=20, fg_color="white", text_color="black")
-    tipo_oportunidade_titulo.grid(padx=10,pady=5, row= 0, column=4)
-    tipo_oportunidade_box.grid(padx=10,pady=(0,5), row=1, column=4)
-    
-
-    frame_dist_peso.columnconfigure(1,weight=1)
-    frame_dist_peso.columnconfigure(2,weight=1)
-    frame_dist_peso.columnconfigure(3,weight=1)
-    frame_dist_peso.columnconfigure(4,weight=1)
+      return indicadores_pesos
 
 
-    
+tipo_risco_titulo = ctk.CTkLabel(master=frame_dist_peso, text= "\nRisco (%)", text_color='white', corner_radius=10, font= tipos_fonte)
+tipo_risco_var = ctk.IntVar(value=0)
+tipo_risco_box = ctk.CTkOptionMenu(master= frame_dist_peso, values=valores, width=100,height=20, fg_color="white", text_color="black", command=salvar_indicadores, variable=tipo_risco_var)
+tipo_risco_titulo.grid(padx=10,pady=5, row= 0, column=1)
+tipo_risco_box.grid(padx=10,pady=(0,5), row=1, column=1)
 
-distribuicao()
+tipo_relevancia_titulo = ctk.CTkLabel(master=frame_dist_peso, text= "\nRelevância (%)", text_color='white', corner_radius=10, font= tipos_fonte)
+tipo_relevancia_var = ctk.IntVar(value=0)
+tipo_relevancia_box = ctk.CTkOptionMenu(master= frame_dist_peso, values=valores, width=100,height=20, fg_color="white", text_color="black", command=salvar_indicadores, variable=tipo_relevancia_var)
+tipo_relevancia_titulo.grid(padx=10,pady=5, row= 0, column=2)
+tipo_relevancia_box.grid(padx=10,pady=(0,5), row=1, column=2)
+
+tipo_materialidade_titulo = ctk.CTkLabel(master=frame_dist_peso, text= "\nMaterialidade (%)", text_color='white', corner_radius=10, font= tipos_fonte)
+tipo_materialidade_var = ctk.IntVar(value=0)
+tipo_materialidade_box = ctk.CTkOptionMenu(master= frame_dist_peso, values=valores, width=100,height=20, fg_color="white", text_color="black", command=salvar_indicadores,variable=tipo_materialidade_var)
+tipo_materialidade_titulo.grid(padx=10,pady=5, row= 0, column=3)
+tipo_materialidade_box.grid(padx=10,pady=(0,10), row=1, column=3)
+
+tipo_oportunidade_titulo = ctk.CTkLabel(master=frame_dist_peso, text= "\nOportunidade (%)", text_color='white', corner_radius=10, font= tipos_fonte)
+tipo_oportunidade_var = ctk.IntVar(value=0)
+tipo_oportunidade_box = ctk.CTkOptionMenu(master= frame_dist_peso, values=valores, width=100,height=20, fg_color="white", text_color="black", command=salvar_indicadores,variable=tipo_oportunidade_var)
+tipo_oportunidade_titulo.grid(padx=10,pady=5, row= 0, column=4)
+tipo_oportunidade_box.grid(padx=10,pady=(0,5), row=1, column=4)
+
+frame_dist_peso.columnconfigure(1,weight=1)
+frame_dist_peso.columnconfigure(2,weight=1)
+frame_dist_peso.columnconfigure(3,weight=1)
+frame_dist_peso.columnconfigure(4,weight=1)
+
 
 # -------------------------------------------- BLOCOS DE INDICADORES --------------------------------------------------------------
 
@@ -492,6 +514,8 @@ def bloco_indicadores():
 #-----------------------------------------------------------------------------------------------------------------------------------------
 fonte_botao=ctk.CTkFont("Arial",size=15,weight='bold')
 
+
+
 class Botao:
     def botao_salvar_config(frame_botoes):
         botao_salvar = ctk.CTkButton(frame_botoes, text="Salvar", command=Botao.botao_salvar_event, font = fonte_botao)
@@ -499,8 +523,11 @@ class Botao:
 
     def botao_salvar_event():
             print("Botão salvar clicado")
-            wb.save(file)
-            messagebox.showinfo("Sucesso", "Alterações salvas com sucesso!", icon='info')
+            if validar_distribuicao():
+              wb.save(file)
+              messagebox.showinfo("Sucesso", "Alterações salvas com sucesso!", icon='info')
+            else:
+              messagebox.showerror("Erro", "Houve um erro ao salvar as alterações!\nVerifique se a soma de porcentagens é igual a 100%.", icon='error')
 
     def botao_visualizar_dashboard_config(frame_botoes):
         botao_visualizar = ctk.CTkButton(frame_botoes, text="Visualizar Dashboard", command=Botao.botao_visualizar_dashboard_event, font=fonte_botao)
