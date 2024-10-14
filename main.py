@@ -1,11 +1,17 @@
 import openpyxl as xl
 import customtkinter as ctk
+import tkinter
 from tkinter import messagebox
+import pandas as pd
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import os
 
-#adicionar validações de distribuição
+#adicionar plot de ranking
+#adicionar mapa coroplético por nota
 
 file = "dados\\Matriz modelo - VERSÃO SISTEMA.xlsx"
+fileModified = "dados\\Matriz modelo - VERSÃO SISTEMA - MOD.xlsx"
 wb = xl.load_workbook(file)
 sheet = wb['SÍNTESE']
 
@@ -53,14 +59,14 @@ def titulo():
 
 titulo()
 
+frame_botoes = ctk.CTkFrame(master=window, border_width=0, corner_radius=20, bg_color="#2F83D7", fg_color="transparent", height=50)
+frame_botoes.pack(fill='both', padx=20)
+
 frame_dist_peso = ctk.CTkFrame(master=window, border_width=0, corner_radius=20, bg_color="#2F83D7", fg_color="#2F83D7", height=20)
 frame_dist_peso.pack(fill = 'both', padx = 20)
 
 frame = ctk.CTkScrollableFrame(master=window, border_width=0, corner_radius=20, bg_color="#2F83D7", fg_color="#2F83D7", height=250, scrollbar_button_color="white")
 frame.pack(fill='both', padx=20,pady=10,expand=1)
-
-frame_botoes = ctk.CTkFrame(master=window, border_width=0, corner_radius=20, bg_color="#2F83D7", fg_color="transparent", height=50)
-frame_botoes.pack(fill='both', padx=20)
 
 frame.grid_columnconfigure(0,weight=1)
 frame.grid_columnconfigure(1,weight=1)
@@ -78,7 +84,7 @@ valores = ["Definir (%)", "5", "10", "15", "20", "25", "30", "35", "40", "45", "
 tipos_fonte = ctk.CTkFont(family='Arial', size= 15, weight= "bold")
 # todas as vezes que um valor é escolhido em um  combo, ele é adicionado à uma lista e somado para verificação, mensagem de verificação
 # apenas para quando a lista tiver 4 elementos
-# se a soma for igual a 100, a mensagem é de sucesso, e é salvo, se não, a mensagem é de erro apenas sem salvamento
+# se a soma for igual a 100, a mensagem é de sucesso, e é salvo, se não, a mensagem é de erro apenas, sem salvamento
 
 def validar_distribuicao():
   list_pesos = salvar_indicadores(value=0)
@@ -513,12 +519,71 @@ def bloco_indicadores():
 # -------------------------------------------- FIM DO BLOCO DE INDICADORES ---------------------------------------------------------------
 
 #-----------------------------------------------------------------------------------------------------------------------------------------
+# Create a new frame for the ranking
+frame_ranking = ctk.CTkFrame(window)
+
+def hide_all():
+   frame.pack_forget()
+   frame_dist_peso.pack_forget()
+ 
+def show_all():
+   frame_dist_peso.pack(fill = 'both', padx = 20)
+   frame.pack(fill='both', padx=20,pady=10,expand=1)
+
+
+def dashboard():
+  # Load data from the Excel file
+  df = pd.read_excel(fileModified, sheet_name='MATRIZ CONTRATOS')
+  print(df)
+  dfMunicipio = df.iloc[6:, 1].tolist()
+  dfIDs = df.iloc[6:, 0].tolist()
+  dfNota = df.iloc[6:, 34]
+  pd.to_numeric(['Unnamed: 34'],  errors='coerce')
+
+  # Create a new DataFrame for plotting
+  novo_df = {
+      'id': dfIDs,
+      'municipio': dfMunicipio,
+      'nota': dfNota
+  }
+  print(f'id:{novo_df["id"]},\nmunicipio:{novo_df["municipio"]},\nnota:{novo_df["nota"]}')
+  dfPlot = pd.DataFrame(novo_df)
+  dfPlot = dfPlot.sort_values(by='nota', ascending=False)
+  dfTop50 = dfPlot.head(50)
+
+  frame_ranking.pack(fill='both')
+
+  # Set the style for the plot
+  plt.style.use('ggplot')
+
+  # Define the size of the figure
+  fig = plt.figure(figsize=(10, 10), dpi=100)
+
+  # Create the horizontal bar chart
+  plt.barh(dfTop50['municipio'], dfTop50['nota'], color='orange', height=0.5)
+
+  # Invert the y-axis to show the highest scores at the top
+  plt.gca().invert_yaxis()
+
+  # Additional configurations for the plot
+  plt.xlabel('Nota', fontsize=12, color='black')
+  plt.ylabel('Município', fontsize=12, color='black')
+  plt.title('Top 50 Municípios por Nota', fontsize=15, color='black')
+
+  # Adjust the layout to avoid overlap
+  plt.tight_layout()
+
+  # Show the plot in a new window
+  plt.show()
+
+  # Create a canvas for embedding the plot in the Tkinter window
+  canvas = FigureCanvasTkAgg(fig, master=frame_ranking)  # Use frame_ranking as the master
+  #canvas.draw()
+  canvas.get_tk_widget().pack(side=tkinter.TOP, fill='both')
 
 
 #-----------------------------------------------------------------------------------------------------------------------------------------
 fonte_botao=ctk.CTkFont("Arial",size=15,weight='bold')
-
-
 
 class Botao:
     def botao_salvar_config(frame_botoes):
@@ -528,7 +593,7 @@ class Botao:
     def botao_salvar_event():
             print("Botão salvar clicado")
             if validar_distribuicao():
-              wb.save(file)
+              wb.save(fileModified)
               messagebox.showinfo("Sucesso", "Alterações salvas com sucesso!", icon='info')
             else:
               messagebox.showerror("Erro", "Houve um erro ao salvar as alterações!\nVerifique se a soma de porcentagens é igual a 100%.", icon='error')
@@ -538,10 +603,17 @@ class Botao:
         botao_visualizar.grid(pady=(10, 10), padx=20, sticky="w",row=10,column=1)  
 
     def botao_visualizar_dashboard_event():
+        hide_all()
+        dashboard()
+
+    def botao_voltar_config(frame_botoes):
+        botao_voltar = ctk.CTkButton(frame_botoes, text="Voltar", command=Botao.botao_voltar_event, font = fonte_botao, fg_color="#2F83D7")
+        botao_voltar.grid(pady=(10, 10), padx=20, sticky="w",row=10,column=3) 
+
+    def botao_voltar_event():
+        show_all()
+        frame_ranking.pack_forget()
         
-        frame.destroy()
-
-
 
 def main():
     caminho = xlsx.xlsx_state(self=xlsx)
@@ -553,6 +625,7 @@ def main():
     # Adicionando os botões
     Botao.botao_salvar_config(frame_botoes)
     Botao.botao_visualizar_dashboard_config(frame_botoes)
+    Botao.botao_voltar_config(frame_botoes)
 
     MainWindow.window_config(window)
 
