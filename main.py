@@ -6,15 +6,25 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import os
+import win32com.client
 
-#adicionar plot de ranking
-#adicionar mapa coroplético por nota
+
+
+#adicionar validações de distribuição
 
 file = "dados\\Matriz modelo - VERSÃO SISTEMA.xlsx"
-fileModified = "dados\\Matriz modelo - VERSÃO SISTEMA - MOD.xlsx"
+fileMod = "dados\\Matriz modelo - VERSÃO SISTEMA - MOD.xlsx"
 wb = xl.load_workbook(file)
 sheet = wb['SÍNTESE']
 
+def refresh_file(file):
+    xlapp = win32com.client.DispatchEx("Excel.Application")
+    path = os.path.abspath(file)
+    wb =  xlapp.Workbooks.Open(path)
+    wb.RefreshAll()
+    xlapp.CalculateUntilAsyncQueriesDone()
+    wb.Save()
+    xlapp.Quit()
 
 class xlsx:
     def xlsx_state(self):
@@ -519,71 +529,71 @@ def bloco_indicadores():
 # -------------------------------------------- FIM DO BLOCO DE INDICADORES ---------------------------------------------------------------
 
 #-----------------------------------------------------------------------------------------------------------------------------------------
-# Create a new frame for the ranking
+
 frame_ranking = ctk.CTkFrame(window)
 
 def hide_all():
    frame.pack_forget()
    frame_dist_peso.pack_forget()
- 
 def show_all():
    frame_dist_peso.pack(fill = 'both', padx = 20)
    frame.pack(fill='both', padx=20,pady=10,expand=1)
 
 
 def dashboard():
-  # Load data from the Excel file
-  df = pd.read_excel(fileModified, sheet_name='MATRIZ CONTRATOS')
-  print(df)
-  dfMunicipio = df.iloc[6:, 1].tolist()
-  dfIDs = df.iloc[6:, 0].tolist()
-  dfNota = df.iloc[6:, 34]
-  pd.to_numeric(['Unnamed: 34'],  errors='coerce')
+    try:
+       wb.close()
+    finally:
+      refresh_file(file)
+      
+      df = pd.read_excel("dados\\Matriz Modelo - VERSÃO SISTEMA.xlsx", sheet_name='MATRIZ CONTRATOS')
+      workbook = xl.load_workbook(file, data_only=True)  # 'data_only=True' lê o valor calculado
+      sheet = workbook['MATRIZ CONTRATOS']
 
-  # Create a new DataFrame for plotting
-  novo_df = {
-      'id': dfIDs,
-      'municipio': dfMunicipio,
-      'nota': dfNota
-  }
-  print(f'id:{novo_df["id"]},\nmunicipio:{novo_df["municipio"]},\nnota:{novo_df["nota"]}')
-  dfPlot = pd.DataFrame(novo_df)
-  dfPlot = dfPlot.sort_values(by='nota', ascending=False)
-  dfTop50 = dfPlot.head(50)
+      # Extrair dados a partir de uma coluna específica
+      #dfNota = [row[0] for row in sheet.iter_rows(min_row=7, min_col=35, max_col=35, values_only=True)]
+      #print(dfNota)
+      dfMunicipio= df.iloc[6:,1]
+      dfIDs = df.iloc[6:,0]
 
-  frame_ranking.pack(fill='both')
+      dfNota = df.iloc[6:, 34]
 
-  # Set the style for the plot
-  plt.style.use('ggplot')
 
-  # Define the size of the figure
-  fig = plt.figure(figsize=(10, 10), dpi=100)
+      novo_df = {
+      'id':dfIDs.values,
+      'municipio':dfMunicipio.values,
+      'nota':dfNota
+      }
 
-  # Create the horizontal bar chart
-  plt.barh(dfTop50['municipio'], dfTop50['nota'], color='orange', height=0.5)
+      dfPlot = pd.DataFrame(novo_df)
+      dfPlot = dfPlot.sort_values(by='nota', ascending=False)
+      print(f'id:{novo_df["id"]},\nmunicipio:{novo_df["municipio"]},\nnota:{novo_df["nota"]}')
+      dfTop50 = dfPlot.head(50)
 
-  # Invert the y-axis to show the highest scores at the top
-  plt.gca().invert_yaxis()
+      frame_ranking.pack(fill='both')
 
-  # Additional configurations for the plot
-  plt.xlabel('Nota', fontsize=12, color='black')
-  plt.ylabel('Município', fontsize=12, color='black')
-  plt.title('Top 50 Municípios por Nota', fontsize=15, color='black')
+      plt.style.use('ggplot')
 
-  # Adjust the layout to avoid overlap
-  plt.tight_layout()
+      fig = plt.figure(figsize=(10, 10), dpi=100)
 
-  # Show the plot in a new window
-  plt.show()
+      plt.barh(dfTop50['municipio'], dfTop50['nota'], color='orange', height=0.5)
 
-  # Create a canvas for embedding the plot in the Tkinter window
-  canvas = FigureCanvasTkAgg(fig, master=frame_ranking)  # Use frame_ranking as the master
-  #canvas.draw()
-  canvas.get_tk_widget().pack(side=tkinter.TOP, fill='both')
+      plt.gca().invert_yaxis()
+
+      plt.xlabel('Nota', fontsize=12, color='black')
+      plt.ylabel('Município', fontsize=12, color='black')
+      plt.title('Top 50 Municípios por Nota', fontsize=15, color='black')
+
+      plt.tight_layout()
+
+      canvas = FigureCanvasTkAgg(fig, master=frame_ranking)  
+      canvas.draw()
+      canvas.get_tk_widget().pack(side=tkinter.TOP, fill='both')
 
 
 #-----------------------------------------------------------------------------------------------------------------------------------------
 fonte_botao=ctk.CTkFont("Arial",size=15,weight='bold')
+
 
 class Botao:
     def botao_salvar_config(frame_botoes):
@@ -591,12 +601,12 @@ class Botao:
         botao_salvar.grid(pady=(10, 10), padx=20, sticky="w",row=10, column=0)  
 
     def botao_salvar_event():
-            print("Botão salvar clicado")
-            if validar_distribuicao():
-              wb.save(fileModified)
-              messagebox.showinfo("Sucesso", "Alterações salvas com sucesso!", icon='info')
-            else:
-              messagebox.showerror("Erro", "Houve um erro ao salvar as alterações!\nVerifique se a soma de porcentagens é igual a 100%.", icon='error')
+        print("Botão salvar clicado")
+        if validar_distribuicao():
+          wb.save(file)
+          messagebox.showinfo("Sucesso", "Alterações salvas com sucesso!", icon='info')
+        else:
+          messagebox.showerror("Erro", "Houve um erro ao salvar as alterações!\nVerifique se a soma de porcentagens é igual a 100%.", icon='error')
 
     def botao_visualizar_dashboard_config(frame_botoes):
         botao_visualizar = ctk.CTkButton(frame_botoes, text="Visualizar Dashboard", command=Botao.botao_visualizar_dashboard_event, font=fonte_botao, fg_color="#2F83D7")
@@ -613,7 +623,7 @@ class Botao:
     def botao_voltar_event():
         show_all()
         frame_ranking.pack_forget()
-        
+
 
 def main():
     caminho = xlsx.xlsx_state(self=xlsx)
