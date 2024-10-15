@@ -1,48 +1,73 @@
-import tkinter
-import customtkinter
+import folium
+import pandas as pd
+import tkinter as tk
+from tkinterweb import HtmlFrame
+import os
 
-from matplotlib.backends.backend_tkagg import (
-    FigureCanvasTkAgg, NavigationToolbar2Tk)
-# Implement the default Matplotlib key bindings.
-from matplotlib.backend_bases import key_press_handler
-from matplotlib.figure import Figure
+# Carregar dados do Excel
+df = pd.read_excel("dados\\Matriz Modelo - VERSÃO SISTEMA.xlsx", sheet_name='MATRIZ CONTRATOS')
 
-import numpy as np
+# Extrair os dados necessários
+dfMunicipio = df.iloc[6:, 1]
+dfNota = df.iloc[6:, 34]
+dfIDs = df.iloc[6:, 0]
 
+novo_df = {
+    'id': dfIDs.values,
+    'municipio': dfMunicipio.values,
+    'nota': dfNota.values
+}
+dfPlot = pd.DataFrame(novo_df)
 
-root = customtkinter.CTk()
-root.title("Embedding in Tk")
+# URL do GeoJSON
+geojson_url = 'https://raw.githubusercontent.com/tbrugz/geodata-br/refs/heads/master/geojson/geojs-29-mun.json'
 
-fig = Figure(figsize=(5, 4), dpi=100)
-t = np.arange(0, 3, .01)
-fig.add_subplot(111).plot(t, 2 * np.sin(2 * np.pi * t))
+# Criar o mapa
+mapa_mun_bahia = folium.Map(location=[-12.9704, -38.5124], zoom_start=6, tiles='cartodbpositron')
 
-canvas = FigureCanvasTkAgg(fig, master=root)  # A tk.DrawingArea.
-canvas.draw()
-canvas.get_tk_widget().pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
+# Criar o choropleth
+folium.Choropleth(
+    geo_data=geojson_url,
+    data=dfPlot,
+    columns=['id', 'nota'],
+    key_on='feature.properties.id',
+    fill_color='YlOrRd',
+    fill_opacity=0.9,
+    line_opacity=0.5,
+    legend_name="Notas"
+).add_to(mapa_mun_bahia)
 
-toolbar = NavigationToolbar2Tk(canvas, root)
-toolbar.update()
-canvas.get_tk_widget().pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
+# Salvar o mapa em um arquivo HTML
+map_file = 'mapa_cloropleto_bahia.html'
+mapa_mun_bahia.save(map_file)
 
+# Criar a interface Tkinter
+class App(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.title("Mapa Cloroplético da Bahia")
+        self.geometry("800x600")
 
-def on_key_press(event):
-    print("you pressed {}".format(event.key))
-    key_press_handler(event, canvas, toolbar)
+        # Frame para o mapa
+        self.frame_map = tk.Frame(self)
+        self.frame_map.pack(fill='both', expand=True)
 
+        # Carregar e exibir o mapa
+        self.show_map()
 
-canvas.mpl_connect("key_press_event", on_key_press)
+    def show_map(self):
+        html_frame = HtmlFrame(self.frame_map, horizontal_scrollbar="auto")
+        html_frame.pack(fill='both', expand=True)
 
+        # Ler o arquivo HTML e carregar no frame
+        with open(map_file, 'r', encoding='utf-8') as f:
+            html_content = f.read()
+            html_frame.add_html(html_content)  # Usar set_html para exibir o conteúdo
 
-def _quit():
-    root.quit()     # stops mainloop
-    root.destroy()  # this is necessary on Windows to prevent
-                    # Fatal Python Error: PyEval_RestoreThread: NULL tstate
+if __name__ == "__main__":
+    app = App()
+    app.mainloop()
 
-
-button = customtkinter.CTkButton(master=root, text="Quit", command=_quit)
-button.pack(side=tkinter.BOTTOM)
-
-root.mainloop()
-# If you put root.destroy() here, it will cause an error if the window is
-# closed with the window manager.
+    # Limpar o arquivo do mapa após o fechamento
+    if os.path.exists(map_file):
+        os.remove(map_file)

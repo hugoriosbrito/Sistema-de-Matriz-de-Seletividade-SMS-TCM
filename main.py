@@ -16,19 +16,10 @@ file = "dados\\Matriz modelo - VERSÃO SISTEMA.xlsx"
 wb = xl.load_workbook(file)
 sheet = wb['SÍNTESE']
 
-def refresh_file(file):
-    xlapp = win32com.client.DispatchEx("Excel.Application")
-    path = os.path.abspath(file)
-    wb =  xlapp.Workbooks.Open(path)
-    wb.RefreshAll()
-    xlapp.CalculateUntilAsyncQueriesDone()
-    wb.Save()
-    xlapp.Quit()
-
 class xlsx:
     def xlsx_state(self):
         diretorio_atual = os.path.dirname(os.path.abspath(__file__))
-        nome_arquivo = file
+        nome_arquivo = 'Matriz modelo - VERSÃO SISTEMA'
         pasta_arquivo = os.path.join(diretorio_atual, "dados")
         os.makedirs(pasta_arquivo, exist_ok=True)
         path = os.path.join(pasta_arquivo, nome_arquivo)
@@ -61,12 +52,10 @@ class MainWindow:
         window.iconbitmap("src\\icon.ico")
         window.protocol("WM_DELETE_WINDOW",on_closing)
 
-def titulo():
-    fonte_titulo = ctk.CTkFont(family='Arial', size=40, weight='bold')
-    titulo = ctk.CTkLabel(window, text="Sistema de Gerenciamento de Indicadores", font=fonte_titulo, anchor="center", corner_radius=20, text_color="white")
-    titulo.pack(pady=20, padx=20, anchor="center")  # Pequeno espaçamento nas laterais do título
 
-titulo()
+fonte_titulo = ctk.CTkFont(family='Arial', size=40, weight='bold')
+titulo = ctk.CTkLabel(window, text="Sistema de Gerenciamento de Indicadores", font=fonte_titulo, anchor="center", corner_radius=20, text_color="white")
+titulo.pack(pady=20, padx=20, anchor="center")  # Pequeno espaçamento nas laterais do título
 
 frame_botoes = ctk.CTkFrame(master=window, border_width=0, corner_radius=20, bg_color="#2F83D7", fg_color="transparent", height=50)
 frame_botoes.pack(fill='both', padx=20)
@@ -83,7 +72,6 @@ frame.grid_columnconfigure(2,weight=1)
 frame.grid_columnconfigure(3,weight=1)
 
 #Alterações na distribuição de peso
-
 
 distribuicao_fonte = ctk.CTkFont(family='Arial', size=15, weight='bold')
 distribuicao_titulo = ctk.CTkLabel(master=frame_dist_peso, text= "Distribuição de peso \n por tipo ", font=distribuicao_fonte, text_color='white', corner_radius=20, anchor="center")
@@ -528,6 +516,15 @@ def bloco_indicadores():
 
 #-----------------------------------------------------------------------------------------------------------------------------------------
 
+def refresh_file(file):
+    xlapp = win32com.client.DispatchEx("Excel.Application")
+    path = os.path.abspath(file)
+    wb =  xlapp.Workbooks.Open(path)
+    wb.RefreshAll()
+    xlapp.CalculateUntilAsyncQueriesDone()
+    wb.Save()
+    xlapp.Quit()
+
 frame_ranking = ctk.CTkFrame(window, width=500)
 
 def hide_all():
@@ -625,11 +622,8 @@ class Botao:
 def main():
     caminho = xlsx.xlsx_state(self=xlsx)
     print(caminho)
-
-    # Adicionando o bloco de indicadores
+    
     bloco_indicadores()
-
-    # Adicionando os botões
     Botao.botao_salvar_config(frame_botoes)
     Botao.botao_visualizar_dashboard_config(frame_botoes)
     Botao.botao_voltar_config(frame_botoes)
