@@ -2,6 +2,9 @@ import folium
 import pandas as pd
 import tkinter as tk
 from tkinterweb import HtmlFrame
+import tkhtmlview
+from tkhtmlview import HTMLText, RenderHTML, HTMLLabel
+import webview
 import os
 
 # Carregar dados do Excel
@@ -56,13 +59,9 @@ class App(tk.Tk):
         self.show_map()
 
     def show_map(self):
-        html_frame = HtmlFrame(self.frame_map, horizontal_scrollbar="auto")
-        html_frame.pack(fill='both', expand=True)
-
-        # Ler o arquivo HTML e carregar no frame
-        with open(map_file, 'r', encoding='utf-8') as f:
-            html_content = f.read()
-            html_frame.add_html(html_content)  # Usar set_html para exibir o conteúdo
+        html_label = HTMLLabel(self.frame_map, html=RenderHTML(map_file))
+        html_label.pack(fill="both", expand=True)
+        html_label.fit_height()
 
 if __name__ == "__main__":
     app = App()

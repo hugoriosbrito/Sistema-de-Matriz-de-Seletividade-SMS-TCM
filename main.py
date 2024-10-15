@@ -1,13 +1,14 @@
+import folium.features
 import openpyxl as xl
 import customtkinter as ctk
-import tkinter
 from tkinter import messagebox
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import os
 import win32com.client
-
+import folium
+import webview
 
 
 #adicionar validações de distribuição
@@ -16,7 +17,7 @@ file = "dados\\Matriz modelo - VERSÃO SISTEMA.xlsx"
 wb = xl.load_workbook(file)
 sheet = wb['SÍNTESE']
 
-class xlsx:
+"""class xlsx:
     def xlsx_state(self):
         diretorio_atual = os.path.dirname(os.path.abspath(__file__))
         nome_arquivo = 'Matriz modelo - VERSÃO SISTEMA'
@@ -31,7 +32,7 @@ class xlsx:
 #Classe para obter o caminho do arquivo .xlsx
 class XlsxPath(xlsx):
     def get_path(self):
-        return xlsx.xlsx_state(self)
+        return xlsx.xlsx_state(self)"""
 
 #destroi a instancia criada pelo openpyxl
 def on_closing():
@@ -50,8 +51,6 @@ class MainWindow:
         window.configure(fg_color="#3C91E6")
         window.title("Sistema de Gerenciamento de Indicadores")
         window.iconbitmap("src\\icon.ico")
-        window.protocol("WM_DELETE_WINDOW",on_closing)
-
 
 fonte_titulo = ctk.CTkFont(family='Arial', size=40, weight='bold')
 titulo = ctk.CTkLabel(window, text="Sistema de Gerenciamento de Indicadores", font=fonte_titulo, anchor="center", corner_radius=20, text_color="white")
@@ -511,7 +510,6 @@ def bloco_indicadores():
     botao_switch15_event()
     switch15.grid(padx=10, pady=5, sticky="w")
 
-
 # -------------------------------------------- FIM DO BLOCO DE INDICADORES ---------------------------------------------------------------
 
 #-----------------------------------------------------------------------------------------------------------------------------------------
@@ -525,8 +523,6 @@ def refresh_file(file):
     wb.Save()
     xlapp.Quit()
 
-frame_ranking = ctk.CTkFrame(window, width=500)
-
 def hide_all():
    frame.pack_forget()
    frame_dist_peso.pack_forget()
@@ -534,12 +530,100 @@ def show_all():
    frame_dist_peso.pack(fill = 'both', padx = 20)
    frame.pack(fill='both', padx=20,pady=10,expand=1)
 
+frame_ranking_geral = ctk.CTkFrame(window, width=500)
+
+
+def ranking(dfPlot):
+    global canvas
+    dfTop50 = dfPlot.head(50)
+
+    frame_ranking_geral.pack(side='left')
+
+    fig = plt.figure(figsize=(10, 10))
+
+    #plotagem do ranking
+    plt.barh(dfTop50['municipio'], dfTop50['nota'], color='orange', height=0.5)
+
+    plt.gca().invert_yaxis()
+
+    plt.xlabel('Nota', fontsize=12, color='white')
+    plt.ylabel('Município', fontsize=12, color='white')
+    plt.title('Top 50 Municípios por Nota', fontsize=15, color='white')
+
+    plt.gca().set_facecolor("#3C91E6")  # Fundo do gráfico
+    fig.patch.set_facecolor("#3C91E6")  # Fundo da figura
+    # Ajustando a cor dos rótulos do eixo Y (nomes dos municípios) para branco
+    plt.gca().tick_params(axis='y', colors='white')
+    # Ajustando a cor dos rótulos do eixo X (valores das notas) para branco
+    plt.gca().tick_params(axis='x', colors='white')
+
+    plt.tight_layout()
+
+    canvas = FigureCanvasTkAgg(fig, master=frame_ranking_geral)  
+    canvas.draw()
+    canvas.get_tk_widget().pack(side="top", fill='both',expand=True)
+
+map_file = 'dados\\mapa_cloropleto_bahia.html'
+def mapa_cloropletico_bahia():
+  global map_file
+  # URL do GeoJSON
+  geojson_url = 'https://raw.githubusercontent.com/tbrugz/geodata-br/refs/heads/master/geojson/geojs-29-mun.json'
+
+  # Criar o mapa
+  mapa_mun_bahia = folium.Map(location=[-12.9704, -38.5124], zoom_start=6, tiles='cartodbpositron')
+
+  # Criar o choropleth
+  folium.Choropleth(
+      geo_data=geojson_url,
+      data=dfPlot,
+      columns=['id', 'nota'],
+      key_on='feature.properties.id',
+      fill_color='YlOrRd',
+      fill_opacity=0.9,
+      line_opacity=0.5,
+      legend_name="Notas"
+  ).add_to(mapa_mun_bahia)
+
+  estilo = lambda x: {"fillColor": "white",
+                   "color": "black",
+                   "fillOpacity": 0.001,
+                   "weight": 0.001}
+
+  estilo_destaque = lambda x: {"fillColor": "darkblue",
+                              "color": "black",
+                              "fillOpacity": 0.5,
+                              "weight": 1}
+
+  highlight = folium.features.GeoJson(data = geojson_url,
+                                    style_function = estilo,
+                                    highlight_function = estilo_destaque,
+                                    name = "Destaque")
+
+  #Adicionando caixa de texto
+  folium.features.GeoJsonTooltip(fields = ["name"],
+                                aliases = ["municipio"],
+                                labels = False,
+                                style = ("background-color: white; color: black; font-family: arial; font-size: 16px; padding: 10px;")).add_to(highlight)
+
+  #Adicionando o destaque ao mapa
+  mapa_mun_bahia.add_child(highlight)
+
+  mapa_mun_bahia.save(map_file)
+  
+
+def show_mapa_cloropletico():
+    if os.path.exists(map_file): 
+      webview.create_window('Mapa Cloroplético de Municípios da Bahia', map_file)
+      webview.start()
+    else: 
+      messagebox.showerror("Erro: Arquivo Inexistente", "Erro!.\n Clique em Salvar para visualizar o mapa")
+
 
 def dashboard():
-    global canvas
     try:
        wb.close()
     finally:
+      global dfPlot
       df = pd.read_excel("dados\\Matriz Modelo - VERSÃO SISTEMA.xlsx", sheet_name='MATRIZ CONTRATOS')
 
       dfMunicipio= df.iloc[6:,1]
@@ -554,38 +638,12 @@ def dashboard():
 
       dfPlot = pd.DataFrame(novo_df)
       dfPlot = dfPlot.sort_values(by='nota', ascending=False)
-      print(f'id:{novo_df["id"]},\nmunicipio:{novo_df["municipio"]},\nnota:{novo_df["nota"]}')
-      dfTop50 = dfPlot.head(50)
-
-      frame_ranking.pack(side=tkinter.LEFT)
-
-      fig = plt.figure(figsize=(8, 10))
-
-      plt.barh(dfTop50['municipio'], dfTop50['nota'], color='orange', height=0.5)
-
-      plt.gca().invert_yaxis()
-
-      plt.xlabel('Nota', fontsize=12, color='white')
-      plt.ylabel('Município', fontsize=12, color='white')
-      plt.title('Top 50 Municípios por Nota', fontsize=15, color='white')
-
-      plt.gca().set_facecolor("#3C91E6")  # Fundo do gráfico
-      fig.patch.set_facecolor("#3C91E6")  # Fundo da figura
-      # Ajustando a cor dos rótulos do eixo Y (nomes dos municípios) para branco
-      plt.gca().tick_params(axis='y', colors='white')
-      # Ajustando a cor dos rótulos do eixo X (valores das notas) para branco
-      plt.gca().tick_params(axis='x', colors='white')
-
-      plt.tight_layout()
-
-      canvas = FigureCanvasTkAgg(fig, master=frame_ranking)  
-      canvas.draw()
-      canvas.get_tk_widget().pack(side=tkinter.TOP, fill='both',expand=True)
-
+      #print(f'id:{novo_df["id"]},\nmunicipio:{novo_df["municipio"]},\nnota:{novo_df["nota"]}')
+      ranking(dfPlot)
 
 #-----------------------------------------------------------------------------------------------------------------------------------------
-fonte_botao=ctk.CTkFont("Arial",size=15,weight='bold')
 
+fonte_botao=ctk.CTkFont("Arial",size=15,weight='bold')
 
 class Botao:
     def botao_salvar_config(frame_botoes):
@@ -595,6 +653,7 @@ class Botao:
     def botao_salvar_event():
         print("Botão salvar clicado")
         if validar_distribuicao():
+
           wb.save(file)
           refresh_file(file)
           messagebox.showinfo("Sucesso", "Alterações salvas com sucesso!", icon='info')
@@ -602,12 +661,27 @@ class Botao:
           messagebox.showerror("Erro", "Houve um erro ao salvar as alterações!\nVerifique se a soma de porcentagens é igual a 100%.", icon='error')
 
     def botao_visualizar_dashboard_config(frame_botoes):
-        botao_visualizar = ctk.CTkButton(frame_botoes, text="Visualizar Dashboard", command=Botao.botao_visualizar_dashboard_event, font=fonte_botao, fg_color="#2F83D7")
+        botao_visualizar = ctk.CTkButton(frame_botoes, text="Ranking", command=Botao.botao_visualizar_dashboard_event, font=fonte_botao, fg_color="#2F83D7")
         botao_visualizar.grid(pady=(10, 10), padx=20, sticky="w",row=10,column=1)  
 
     def botao_visualizar_dashboard_event():
-        hide_all()
-        dashboard()
+        if validar_distribuicao():
+          hide_all()
+          dashboard()
+        else: 
+          messagebox.showerror("Erro", "Salve as alterações para visualizar o Ranking")
+                               
+    def botao_visualizar_mapa_config(frame_botoes):
+        botao_visualizar = ctk.CTkButton(frame_botoes, text="Mapa", command=Botao.botao_visualizar_mapa_event, font=fonte_botao, fg_color="#2F83D7")
+        botao_visualizar.grid(pady=(10, 10), padx=20, sticky="w",row=10,column=2)  
+
+    def botao_visualizar_mapa_event():
+        if validar_distribuicao():
+          mapa_cloropletico_bahia()
+          hide_all()
+          show_mapa_cloropletico()
+        else:
+           messagebox.showerror("Erro", "Salve o Arquivo para visualizar o Mapa")
 
     def botao_voltar_config(frame_botoes):
         botao_voltar = ctk.CTkButton(frame_botoes, text="Voltar", command=Botao.botao_voltar_event, font = fonte_botao, fg_color="#2F83D7")
@@ -616,22 +690,32 @@ class Botao:
     def botao_voltar_event():
         show_all()
         canvas.get_tk_widget().destroy()
-        frame_ranking.pack_forget()
+        frame_ranking_geral.pack_forget()
+
 
 
 def main():
-    caminho = xlsx.xlsx_state(self=xlsx)
-    print(caminho)
+    """caminho = xlsx.xlsx_state(self=xlsx)
+    print(caminho)"""
     
     bloco_indicadores()
     Botao.botao_salvar_config(frame_botoes)
     Botao.botao_visualizar_dashboard_config(frame_botoes)
     Botao.botao_voltar_config(frame_botoes)
+    Botao.botao_visualizar_mapa_config(frame_botoes)
 
     MainWindow.window_config(window)
+
 
 if __name__ == "__main__":
     main()
     window.mainloop()
+    try:
+      exit()
+    finally:
+      if os.path.exists(map_file):
+          os.remove(map_file)
+
+    
     
 
