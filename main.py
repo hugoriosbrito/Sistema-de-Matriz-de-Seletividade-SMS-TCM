@@ -13,7 +13,6 @@ import win32com.client
 #adicionar validações de distribuição
 
 file = "dados\\Matriz modelo - VERSÃO SISTEMA.xlsx"
-fileMod = "dados\\Matriz modelo - VERSÃO SISTEMA - MOD.xlsx"
 wb = xl.load_workbook(file)
 sheet = wb['SÍNTESE']
 
@@ -60,7 +59,7 @@ class MainWindow:
         window.configure(fg_color="#3C91E6")
         window.title("Sistema de Gerenciamento de Indicadores")
         window.iconbitmap("src\\icon.ico")
-        window.after(0, lambda:window.state('zoomed'))
+        window.protocol("WM_DELETE_WINDOW",on_closing)
 
 def titulo():
     fonte_titulo = ctk.CTkFont(family='Arial', size=40, weight='bold')
@@ -525,12 +524,11 @@ def bloco_indicadores():
     switch15.grid(padx=10, pady=5, sticky="w")
 
 
-
 # -------------------------------------------- FIM DO BLOCO DE INDICADORES ---------------------------------------------------------------
 
 #-----------------------------------------------------------------------------------------------------------------------------------------
 
-frame_ranking = ctk.CTkFrame(window)
+frame_ranking = ctk.CTkFrame(window, width=500)
 
 def hide_all():
    frame.pack_forget()
@@ -541,23 +539,15 @@ def show_all():
 
 
 def dashboard():
+    global canvas
     try:
        wb.close()
     finally:
-      refresh_file(file)
-      
       df = pd.read_excel("dados\\Matriz Modelo - VERSÃO SISTEMA.xlsx", sheet_name='MATRIZ CONTRATOS')
-      workbook = xl.load_workbook(file, data_only=True)  # 'data_only=True' lê o valor calculado
-      sheet = workbook['MATRIZ CONTRATOS']
 
-      # Extrair dados a partir de uma coluna específica
-      #dfNota = [row[0] for row in sheet.iter_rows(min_row=7, min_col=35, max_col=35, values_only=True)]
-      #print(dfNota)
       dfMunicipio= df.iloc[6:,1]
       dfIDs = df.iloc[6:,0]
-
       dfNota = df.iloc[6:, 34]
-
 
       novo_df = {
       'id':dfIDs.values,
@@ -570,25 +560,30 @@ def dashboard():
       print(f'id:{novo_df["id"]},\nmunicipio:{novo_df["municipio"]},\nnota:{novo_df["nota"]}')
       dfTop50 = dfPlot.head(50)
 
-      frame_ranking.pack(fill='both')
+      frame_ranking.pack(side=tkinter.LEFT)
 
-      plt.style.use('ggplot')
-
-      fig = plt.figure(figsize=(10, 10), dpi=100)
+      fig = plt.figure(figsize=(8, 10))
 
       plt.barh(dfTop50['municipio'], dfTop50['nota'], color='orange', height=0.5)
 
       plt.gca().invert_yaxis()
 
-      plt.xlabel('Nota', fontsize=12, color='black')
-      plt.ylabel('Município', fontsize=12, color='black')
-      plt.title('Top 50 Municípios por Nota', fontsize=15, color='black')
+      plt.xlabel('Nota', fontsize=12, color='white')
+      plt.ylabel('Município', fontsize=12, color='white')
+      plt.title('Top 50 Municípios por Nota', fontsize=15, color='white')
+
+      plt.gca().set_facecolor("#3C91E6")  # Fundo do gráfico
+      fig.patch.set_facecolor("#3C91E6")  # Fundo da figura
+      # Ajustando a cor dos rótulos do eixo Y (nomes dos municípios) para branco
+      plt.gca().tick_params(axis='y', colors='white')
+      # Ajustando a cor dos rótulos do eixo X (valores das notas) para branco
+      plt.gca().tick_params(axis='x', colors='white')
 
       plt.tight_layout()
 
       canvas = FigureCanvasTkAgg(fig, master=frame_ranking)  
       canvas.draw()
-      canvas.get_tk_widget().pack(side=tkinter.TOP, fill='both')
+      canvas.get_tk_widget().pack(side=tkinter.TOP, fill='both',expand=True)
 
 
 #-----------------------------------------------------------------------------------------------------------------------------------------
@@ -604,6 +599,7 @@ class Botao:
         print("Botão salvar clicado")
         if validar_distribuicao():
           wb.save(file)
+          refresh_file(file)
           messagebox.showinfo("Sucesso", "Alterações salvas com sucesso!", icon='info')
         else:
           messagebox.showerror("Erro", "Houve um erro ao salvar as alterações!\nVerifique se a soma de porcentagens é igual a 100%.", icon='error')
@@ -622,6 +618,7 @@ class Botao:
 
     def botao_voltar_event():
         show_all()
+        canvas.get_tk_widget().destroy()
         frame_ranking.pack_forget()
 
 
@@ -642,4 +639,5 @@ def main():
 if __name__ == "__main__":
     main()
     window.mainloop()
+    
 
