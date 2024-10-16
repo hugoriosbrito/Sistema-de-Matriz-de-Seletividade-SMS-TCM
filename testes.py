@@ -10,15 +10,18 @@ import os
 # Carregar dados do Excel
 df = pd.read_excel("dados\\Matriz Modelo - VERSÃO SISTEMA.xlsx", sheet_name='MATRIZ CONTRATOS')
 
-# Extrair os dados necessários
-dfMunicipio = df.iloc[6:, 1]
-dfNota = df.iloc[6:, 34]
-dfIDs = df.iloc[6:, 0]
+dfIDs = df.iloc[6:,0]
+dfMunicipio= df.iloc[6:,1]
+dfNota = df.iloc[6:,34]
+dfIRCE = df.iloc[6:,2]
+dfDCE=df.iloc[6:,3]
 
 novo_df = {
-    'id': dfIDs.values,
-    'municipio': dfMunicipio.values,
-    'nota': dfNota.values
+    'id':dfIDs.values,
+    'municipio':dfMunicipio.values,
+    'irce':dfIRCE.values,
+    'dce':dfDCE.values,
+    'nota':dfNota.values
 }
 dfPlot = pd.DataFrame(novo_df)
 
