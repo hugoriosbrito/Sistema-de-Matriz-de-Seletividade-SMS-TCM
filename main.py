@@ -17,31 +17,13 @@ file = "dados\\Matriz modelo - VERSÃO SISTEMA.xlsx"
 wb = xl.load_workbook(file)
 sheet = wb['SÍNTESE']
 
-"""class xlsx:
-    def xlsx_state(self):
-        diretorio_atual = os.path.dirname(os.path.abspath(__file__))
-        nome_arquivo = 'Matriz modelo - VERSÃO SISTEMA'
-        pasta_arquivo = os.path.join(diretorio_atual, "dados")
-        os.makedirs(pasta_arquivo, exist_ok=True)
-        path = os.path.join(pasta_arquivo, nome_arquivo)
-        exists = os.path.exists(path)
-
-        if exists:
-            return path
-
-#Classe para obter o caminho do arquivo .xlsx
-class XlsxPath(xlsx):
-    def get_path(self):
-        return xlsx.xlsx_state(self)"""
-
+window = ctk.CTk()
 #destroi a instancia criada pelo openpyxl
 def on_closing():
     try:
         wb.close()
     finally:
         window.destroy()
-
-window = ctk.CTk()
 
 class MainWindow:
     def window_config(window):
@@ -522,46 +504,111 @@ def refresh_file(file):
     xlapp.CalculateUntilAsyncQueriesDone()
     wb.Save()
     xlapp.Quit()
-
+######
 def hide_all():
-   frame.pack_forget()
-   frame_dist_peso.pack_forget()
+    frame.pack_forget()
+    frame_dist_peso.pack_forget()
+    frame_ranking_geral.pack_forget()  
 def show_all():
-   frame_dist_peso.pack(fill = 'both', padx = 20)
-   frame.pack(fill='both', padx=20,pady=10,expand=1)
+    frame_dist_peso.pack(fill='both', padx=20)
+    frame.pack(fill='both', padx=20, pady=10, expand=1)
 
-frame_ranking_geral = ctk.CTkFrame(window, width=500)
+frame_ranking_geral = ctk.CTkFrame(master=window, width=500,fg_color='black')
+frame_plotagem_ranking_geral = ctk.CTkFrame(master=frame_ranking_geral, border_width=0, fg_color="#2F83D7")
 
 
-def ranking(dfPlot):
+def plotar_ranking_geral(dfPlot):
     global canvas
     dfTop50 = dfPlot.head(50)
+    
+    # Garantindo que o ranking geral será mostrado ao plotar
+    frame_ranking_geral.pack(expand=True,fill='both')
+    frame_plotagem_ranking_geral.grid(row=0,column=0)
 
-    frame_ranking_geral.pack(side='left')
+    fig = plt.figure(figsize=(8, 8))
 
-    fig = plt.figure(figsize=(10, 10))
-
-    #plotagem do ranking
+    # Plotagem do ranking
     plt.barh(dfTop50['municipio'], dfTop50['nota'], color='orange', height=0.5)
-
     plt.gca().invert_yaxis()
 
     plt.xlabel('Nota', fontsize=12, color='white')
     plt.ylabel('Município', fontsize=12, color='white')
     plt.title('Top 50 Municípios por Nota', fontsize=15, color='white')
 
-    plt.gca().set_facecolor("#3C91E6")  # Fundo do gráfico
-    fig.patch.set_facecolor("#3C91E6")  # Fundo da figura
-    # Ajustando a cor dos rótulos do eixo Y (nomes dos municípios) para branco
+    plt.gca().set_facecolor("#3C91E6")
+    fig.patch.set_facecolor("#3C91E6")
+
     plt.gca().tick_params(axis='y', colors='white')
-    # Ajustando a cor dos rótulos do eixo X (valores das notas) para branco
     plt.gca().tick_params(axis='x', colors='white')
 
     plt.tight_layout()
 
-    canvas = FigureCanvasTkAgg(fig, master=frame_ranking_geral)  
+    canvas = FigureCanvasTkAgg(fig, master=frame_plotagem_ranking_geral)
     canvas.draw()
-    canvas.get_tk_widget().pack(side="top", fill='both',expand=True)
+    canvas.get_tk_widget().grid(padx=20, pady=10, sticky="nsew",column=0)
+
+def plotar_ranking_filtrado():
+    selected_dce = dce_var.get()
+    selected_irce = irce_var.get()
+
+    if selected_dce == '1ª DCE':
+        df_filtrado = dfPlot[(dfPlot['dce'] == '1ª DCE') & (dfPlot['irce'] == selected_irce)]
+    elif selected_dce == '2ª DCE':
+        df_filtrado = dfPlot[(dfPlot['dce'] == '2ª DCE') & (dfPlot['irce'] == selected_irce)]
+    else:
+        messagebox.showerror("Erro", "Selecione uma DCE e uma IRCE válidas")
+        return
+
+    if df_filtrado.empty:
+        messagebox.showinfo("Informação", "Nenhum município encontrado para a IRCE selecionada.")
+        return
+
+    df_filtrado = df_filtrado.sort_values(by='nota', ascending=False)
+
+    fig = plt.figure(figsize=(8, 8))
+
+    # Plotagem do ranking
+    plt.barh(df_filtrado['municipio'], df_filtrado['nota'], color='orange', height=0.5)
+    plt.gca().invert_yaxis()
+    plt.xlabel('Nota', fontsize=12, color='white')
+    plt.ylabel('Município', fontsize=12, color='white')
+    plt.title(f'Municípios da IRCE {selected_irce} ({selected_dce})', fontsize=15, color='white')
+    plt.gca().set_facecolor("#3C91E6")  # Fundo do gráfico
+    fig.patch.set_facecolor("#3C91E6")  # Fundo da figura
+    plt.gca().tick_params(axis='y', colors='white')
+    plt.gca().tick_params(axis='x', colors='white')
+    plt.tight_layout()
+
+    # Limpando o frame antes de desenhar o novo gráfico
+    for widget in frame_plotagem_ranking_geral.winfo_children() and frame_ranking_geral.winfo_children():
+        widget.destroy()
+
+    # Adicionando o gráfico à interface
+    canvas = FigureCanvasTkAgg(fig, master=frame_plotagem_ranking_geral)
+    canvas.draw()
+    canvas.get_tk_widget().grid(padx=10, pady=10, sticky="nsew",column=3,row=4)
+
+filter_button_frame = ctk.CTkFrame(master=frame_ranking_geral,  corner_radius=10, fg_color="white",height=100)
+filter_button_frame.grid(padx=20, pady=10, sticky="nsew",column=1)
+
+# Variável para armazenar a DCE selecionada
+dce_var = ctk.StringVar()
+#Botão de lista para selecionar 1ª ou 2ª DCE
+dce_menu = ctk.CTkOptionMenu(master=filter_button_frame, variable=dce_var, values=['1ª DCE', '2ª DCE'], command=lambda _: atualizar_irces())
+# Botão de lista para mostrar IRCEs de acordo com a DCE
+irce_var = ctk.StringVar()
+irce_menu = ctk.CTkOptionMenu(master=filter_button_frame, variable=irce_var, values=[])
+# Botão para plotar o gráfico baseado na filtragem
+plotar_button = ctk.CTkButton(master=filter_button_frame, text="Plotar Ranking", command=plotar_ranking_filtrado)
+
+def show_filter():
+  dce_menu.grid(pady=10, column=0,row=0)
+  irce_menu.grid(pady=10, column=0,row=1)
+  plotar_button.grid(pady=10, column=0,row=2)
+def hide_filter():
+  dce_menu.grid_forget()
+  irce_menu.grid_forget()
+  plotar_button.grid_forget()
 
 map_file = 'dados\\mapa_cloropleto_bahia.html'
 def mapa_cloropletico_bahia():
@@ -610,7 +657,6 @@ def mapa_cloropletico_bahia():
 
   mapa_mun_bahia.save(map_file)
   
-
 def show_mapa_cloropletico():
     if os.path.exists(map_file): 
       webview.create_window('Mapa Cloroplético de Municípios da Bahia', map_file)
@@ -618,30 +664,62 @@ def show_mapa_cloropletico():
     else: 
       messagebox.showerror("Erro: Arquivo Inexistente", "Erro!.\n Clique em Salvar para visualizar o mapa")
 
-
 def dashboard():
     try:
        wb.close()
     finally:
-      global dfPlot
+      global dfPlot, irce_por_mun_dce1, irce_por_mun_dce2
       df = pd.read_excel("dados\\Matriz Modelo - VERSÃO SISTEMA.xlsx", sheet_name='MATRIZ CONTRATOS')
 
-      dfMunicipio= df.iloc[6:,1]
-      dfIDs = df.iloc[6:,0]
+      dfIDs = df.iloc[6:, 0]
+      dfMunicipio = df.iloc[6:, 1]
       dfNota = df.iloc[6:, 34]
+      dfIRCE = df.iloc[6:, 2]
+      dfDCE = df.iloc[6:, 3]
 
       novo_df = {
-      'id':dfIDs.values,
-      'municipio':dfMunicipio.values,
-      'nota':dfNota
-      }
+        'id': dfIDs.values,
+        'municipio': dfMunicipio.values,
+        'irce': dfIRCE.values,
+        'dce': dfDCE.values,
+        'nota': dfNota.values
+    }
 
       dfPlot = pd.DataFrame(novo_df)
       dfPlot = dfPlot.sort_values(by='nota', ascending=False)
       #print(f'id:{novo_df["id"]},\nmunicipio:{novo_df["municipio"]},\nnota:{novo_df["nota"]}')
-      ranking(dfPlot)
+      dce_1, dce_2 = '1ª DCE', '2ª DCE'
+
+      # IRCEs associadas à 1ª e 2ª DCE
+      df_1_DCE = dfPlot[dfPlot['dce'] == dce_1]
+      df_2_DCE = dfPlot[dfPlot['dce'] == dce_2]
+
+      # Listas de IRCEs únicas para cada DCE
+      irce_list_dce1 = df_1_DCE['irce'].drop_duplicates().tolist()
+      irce_list_dce2 = df_2_DCE['irce'].drop_duplicates().tolist()
+
+      # Criando dicionários com IRCEs como chaves e municípios como valores
+      irce_por_mun_dce1 = {irce: df_1_DCE[df_1_DCE['irce'].str.strip() == irce.strip()]['municipio'].tolist() for irce in irce_list_dce1}
+      irce_por_mun_dce2 = {irce: df_2_DCE[df_2_DCE['irce'].str.strip() == irce.strip()]['municipio'].tolist() for irce in irce_list_dce2}
+
+      plotar_ranking_geral(dfPlot)
+
+def atualizar_irces():
+    selected_dce = dce_var.get()
+
+    if selected_dce == '1ª DCE':
+        irce_menu.configure(values=list(irce_por_mun_dce1.keys()))
+    elif selected_dce == '2ª DCE':
+        irce_menu.configure(values=list(irce_por_mun_dce2.keys()))
+        irce_menu.set('')  # Limpar a seleção da IRCE
 
 #-----------------------------------------------------------------------------------------------------------------------------------------
+
+def show_loading_text():
+   window.title('Sistema de Gerenciamento de Indicadores (Carregando...)')
+   
+def hide_loading_text():
+   window.title('Sistema de Gerenciamento de Indicadores')
 
 fonte_botao=ctk.CTkFont("Arial",size=15,weight='bold')
 
@@ -653,10 +731,13 @@ class Botao:
     def botao_salvar_event():
         print("Botão salvar clicado")
         if validar_distribuicao():
-
-          wb.save(file)
-          refresh_file(file)
-          messagebox.showinfo("Sucesso", "Alterações salvas com sucesso!", icon='info')
+          try:
+            show_loading_text()
+          finally:
+            wb.save(file)
+            refresh_file(file)
+            hide_loading_text()
+            messagebox.showinfo("Sucesso", "Alterações salvas com sucesso!", icon='info')
         else:
           messagebox.showerror("Erro", "Houve um erro ao salvar as alterações!\nVerifique se a soma de porcentagens é igual a 100%.", icon='error')
 
@@ -665,12 +746,15 @@ class Botao:
         botao_visualizar.grid(pady=(10, 10), padx=20, sticky="w",row=10,column=1)  
 
     def botao_visualizar_dashboard_event():
-        if validar_distribuicao():
+      if validar_distribuicao():
+          show_loading_text()
           hide_all()
           dashboard()
-        else: 
+          show_filter()
+          hide_loading_text() 
+      else:
           messagebox.showerror("Erro", "Salve as alterações para visualizar o Ranking")
-                               
+                                
     def botao_visualizar_mapa_config(frame_botoes):
         botao_visualizar = ctk.CTkButton(frame_botoes, text="Mapa", command=Botao.botao_visualizar_mapa_event, font=fonte_botao, fg_color="#2F83D7")
         botao_visualizar.grid(pady=(10, 10), padx=20, sticky="w",row=10,column=2)  
@@ -680,6 +764,9 @@ class Botao:
           mapa_cloropletico_bahia()
           hide_all()
           show_mapa_cloropletico()
+          hide_filter()
+          show_all()
+          #Botao.botao_voltar_event()
         else:
            messagebox.showerror("Erro", "Salve o Arquivo para visualizar o Mapa")
 
@@ -688,16 +775,15 @@ class Botao:
         botao_voltar.grid(pady=(10, 10), padx=20, sticky="w",row=10,column=3) 
 
     def botao_voltar_event():
-        show_all()
-        canvas.get_tk_widget().destroy()
-        frame_ranking_geral.pack_forget()
+      show_all()
+      hide_filter()
+      
+      canvas.get_tk_widget().destroy()
+      frame_ranking_geral.pack_forget()  
 
+      
 
-
-def main():
-    """caminho = xlsx.xlsx_state(self=xlsx)
-    print(caminho)"""
-    
+def main(): 
     bloco_indicadores()
     Botao.botao_salvar_config(frame_botoes)
     Botao.botao_visualizar_dashboard_config(frame_botoes)
