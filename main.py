@@ -18,6 +18,8 @@ wb = xl.load_workbook(file)
 sheet = wb['SÍNTESE']
 
 window = ctk.CTk()
+fonte_geral_texto = ctk.CTkFont(family='Arial', size=15, weight='bold')
+
 #destroi a instancia criada pelo openpyxl
 def on_closing():
     try:
@@ -57,7 +59,8 @@ frame.grid_columnconfigure(3,weight=1)
 distribuicao_fonte = ctk.CTkFont(family='Arial', size=15, weight='bold')
 distribuicao_titulo = ctk.CTkLabel(master=frame_dist_peso, text= "Distribuição de peso \n por tipo ", font=distribuicao_fonte, text_color='white', corner_radius=20, anchor="center")
 distribuicao_titulo.grid(padx=(20,20),pady=10, row = 0, column=0)
-valores = ["Definir (%)", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100"]
+valores = ["5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100"]
+
 
 tipos_fonte = ctk.CTkFont(family='Arial', size= 15, weight= "bold")
 # todas as vezes que um valor é escolhido em um  combo, ele é adicionado à uma lista e somado para verificação, mensagem de verificação
@@ -513,27 +516,33 @@ def show_all():
     frame_dist_peso.pack(fill='both', padx=20)
     frame.pack(fill='both', padx=20, pady=10, expand=1)
 
-frame_ranking_geral = ctk.CTkFrame(master=window, width=500,fg_color='black')
-frame_plotagem_ranking_geral = ctk.CTkFrame(master=frame_ranking_geral, border_width=0, fg_color="#2F83D7")
+frame_ranking_geral = ctk.CTkFrame(master=window,fg_color='#3C91E6')
+frame_plotagem_ranking_geral = ctk.CTkFrame(master=frame_ranking_geral, fg_color='#3C91E6')
+
+filter_button_frame = ctk.CTkFrame(master=frame_ranking_geral, fg_color="#3C91E6")
+filter_button_frame.grid(padx=10, pady=10,sticky="nsew",column=1)
+
+frame_plotagem_ranking_filtrado = ctk.CTkFrame(master=filter_button_frame, fg_color='#3C91E6')
+frame_plotagem_ranking_filtrado.grid(padx=10, column=1, row=3)
 
 
 def plotar_ranking_geral(dfPlot):
-    global canvas
+    global canvas, frame_ranking_geral
     dfTop50 = dfPlot.head(50)
     
     # Garantindo que o ranking geral será mostrado ao plotar
     frame_ranking_geral.pack(expand=True,fill='both')
-    frame_plotagem_ranking_geral.grid(row=0,column=0)
+    frame_plotagem_ranking_geral.grid(padx=10,row=0,column=0)
 
-    fig = plt.figure(figsize=(8, 8))
+    fig = plt.figure(figsize=(8, 7.5))
 
     # Plotagem do ranking
-    plt.barh(dfTop50['municipio'], dfTop50['nota'], color='orange', height=0.5)
+    plt.barh(dfTop50['municipio'], dfTop50['nota'], color='#D03645',height=0.5)
     plt.gca().invert_yaxis()
 
     plt.xlabel('Nota', fontsize=12, color='white')
     plt.ylabel('Município', fontsize=12, color='white')
-    plt.title('Top 50 Municípios por Nota', fontsize=15, color='white')
+    plt.title('Top 50 Municípios por Nota', fontsize=14, color='white')
 
     plt.gca().set_facecolor("#3C91E6")
     fig.patch.set_facecolor("#3C91E6")
@@ -542,10 +551,17 @@ def plotar_ranking_geral(dfPlot):
     plt.gca().tick_params(axis='x', colors='white')
 
     plt.tight_layout()
+    #plt.autoscale(enable=True, axis='both')
+
+    
+    # Limpando o frame antes de desenhar o novo gráfico
+    for widget in frame_plotagem_ranking_geral.winfo_children():
+        widget.destroy()
+
 
     canvas = FigureCanvasTkAgg(fig, master=frame_plotagem_ranking_geral)
     canvas.draw()
-    canvas.get_tk_widget().grid(padx=20, pady=10, sticky="nsew",column=0)
+    canvas.get_tk_widget().grid(padx=20,sticky='nsew', pady=10,column=0)
 
 def plotar_ranking_filtrado():
     selected_dce = dce_var.get()
@@ -560,19 +576,19 @@ def plotar_ranking_filtrado():
         return
 
     if df_filtrado.empty:
-        messagebox.showinfo("Informação", "Nenhum município encontrado para a IRCE selecionada.")
+        messagebox.showerror("Erro", "Nenhum município encontrado")
         return
 
     df_filtrado = df_filtrado.sort_values(by='nota', ascending=False)
 
-    fig = plt.figure(figsize=(8, 8))
+    fig = plt.figure(figsize=(5.5, 5.5))
 
     # Plotagem do ranking
     plt.barh(df_filtrado['municipio'], df_filtrado['nota'], color='orange', height=0.5)
     plt.gca().invert_yaxis()
     plt.xlabel('Nota', fontsize=12, color='white')
     plt.ylabel('Município', fontsize=12, color='white')
-    plt.title(f'Municípios da IRCE {selected_irce} ({selected_dce})', fontsize=15, color='white')
+    plt.title(f'      Municípios da IRCE {selected_irce} ({selected_dce})', fontsize=15, color='white')
     plt.gca().set_facecolor("#3C91E6")  # Fundo do gráfico
     fig.patch.set_facecolor("#3C91E6")  # Fundo da figura
     plt.gca().tick_params(axis='y', colors='white')
@@ -580,31 +596,34 @@ def plotar_ranking_filtrado():
     plt.tight_layout()
 
     # Limpando o frame antes de desenhar o novo gráfico
-    for widget in frame_plotagem_ranking_geral.winfo_children() and frame_ranking_geral.winfo_children():
+    for widget in frame_plotagem_ranking_filtrado.winfo_children():
         widget.destroy()
 
     # Adicionando o gráfico à interface
-    canvas = FigureCanvasTkAgg(fig, master=frame_plotagem_ranking_geral)
+    canvas = FigureCanvasTkAgg(fig, master=frame_plotagem_ranking_filtrado)
     canvas.draw()
-    canvas.get_tk_widget().grid(padx=10, pady=10, sticky="nsew",column=3,row=4)
+    canvas.get_tk_widget().grid(padx=10, pady=10,column=3,row=4)
 
-filter_button_frame = ctk.CTkFrame(master=frame_ranking_geral,  corner_radius=10, fg_color="white",height=100)
-filter_button_frame.grid(padx=20, pady=10, sticky="nsew",column=1)
+
 
 # Variável para armazenar a DCE selecionada
 dce_var = ctk.StringVar()
 #Botão de lista para selecionar 1ª ou 2ª DCE
+dce_text= ctk.CTkLabel(master=filter_button_frame,text='DCE', font=fonte_geral_texto,text_color='white')
 dce_menu = ctk.CTkOptionMenu(master=filter_button_frame, variable=dce_var, values=['1ª DCE', '2ª DCE'], command=lambda _: atualizar_irces())
 # Botão de lista para mostrar IRCEs de acordo com a DCE
 irce_var = ctk.StringVar()
+irce_text= ctk.CTkLabel(master=filter_button_frame,text='IRCE', font=fonte_geral_texto, text_color='white')
 irce_menu = ctk.CTkOptionMenu(master=filter_button_frame, variable=irce_var, values=[])
 # Botão para plotar o gráfico baseado na filtragem
 plotar_button = ctk.CTkButton(master=filter_button_frame, text="Plotar Ranking", command=plotar_ranking_filtrado)
 
 def show_filter():
-  dce_menu.grid(pady=10, column=0,row=0)
-  irce_menu.grid(pady=10, column=0,row=1)
-  plotar_button.grid(pady=10, column=0,row=2)
+  dce_text.grid(padx=10,column=0,row=0)
+  dce_menu.grid(padx=10,pady=5, column=1,row=0,sticky='e')
+  irce_text.grid(padx=10,column=0,row=1)
+  irce_menu.grid(padx=10,pady=5, column=1,row=1,sticky='e')
+  plotar_button.grid(padx=10,pady=5, column=1,row=2,sticky='e')
 def hide_filter():
   dce_menu.grid_forget()
   irce_menu.grid_forget()
@@ -711,7 +730,7 @@ def atualizar_irces():
         irce_menu.configure(values=list(irce_por_mun_dce1.keys()))
     elif selected_dce == '2ª DCE':
         irce_menu.configure(values=list(irce_por_mun_dce2.keys()))
-        irce_menu.set('')  # Limpar a seleção da IRCE
+        irce_menu.set('                                        ')  # Limpar a seleção da IRCE
 
 #-----------------------------------------------------------------------------------------------------------------------------------------
 
