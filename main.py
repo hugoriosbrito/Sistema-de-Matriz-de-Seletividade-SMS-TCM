@@ -10,7 +10,7 @@ import folium
 import webview
 
 icon ="_internal\src\icon.ico"
-map_file = '_internal\dados\mapa_cloropleto_bahia.html'
+map_file = "_internal\dados\mapa_cloropleto_bahia.html"
 file = "_internal\dados\Matriz modelo - VERSÃO SISTEMA.xlsx"
 wb = xl.load_workbook(file)
 sheet = wb['SÍNTESE']
@@ -689,7 +689,7 @@ def show_mapa_cloropletico():
     map_url = 'file://' + os.path.abspath(map_file)
 
     if os.path.exists(map_file):
-      webview.create_window('Mapa Cloropleto - Municípios da Bahia', map_url)
+      webview.create_window('Mapa Cloropleto - Municípios da Bahia', map_file)
       webview.start()
     else:
       print(f"Erro: Arquivo {map_file} não encontrado!")
@@ -820,12 +820,12 @@ def main():
     MainWindow.window_config(window)
 
 
-if __name__ == "_main_":
-    main()
-    window.mainloop()
-    window.protocol("WM_DELETE_WINDOW", on_closing())
-    try:
-      exit()
-    finally:
-      if os.path.exists(map_file):
-          os.remove(map_file)
+
+main()
+window.mainloop()
+window.protocol("WM_DELETE_WINDOW", on_closing())
+try:
+  exit()
+finally:
+  if os.path.exists(map_file):
+      os.remove(map_file)
