@@ -5,20 +5,29 @@ from tkinter import messagebox
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-import os
-import win32com.client
+import os, sys, win32com.client
 import folium
 import webview
 
-
-#adicionar validações de distribuição
-
-file = "dados\\Matriz modelo - VERSÃO SISTEMA.xlsx"
+icon ="_internal\src\icon.ico"
+map_file = '_internal\dados\mapa_cloropleto_bahia.html'
+file = "_internal\dados\Matriz modelo - VERSÃO SISTEMA.xlsx"
 wb = xl.load_workbook(file)
 sheet = wb['SÍNTESE']
 
 window = ctk.CTk()
 fonte_geral_texto = ctk.CTkFont(family='Arial', size=15, weight='bold')
+
+# Função para encontrar o caminho do arquivo
+def resource_path(relative_path):
+    """ Retorna o caminho absoluto do recurso, mesmo quando empacotado como .exe """
+    try:
+        # PyInstaller cria uma pasta temporária e armazena o caminho nela
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+
 
 #destroi a instancia criada pelo openpyxl
 def on_closing():
@@ -34,7 +43,7 @@ class MainWindow:
         ctk.set_default_color_theme("dark-blue")
         window.configure(fg_color="#3C91E6")
         window.title("Sistema de Gerenciamento de Indicadores")
-        window.iconbitmap("src\\icon.ico")
+        window.iconbitmap(icon)
 
 fonte_titulo = ctk.CTkFont(family='Arial', size=40, weight='bold')
 titulo = ctk.CTkLabel(window, text="Sistema de Gerenciamento de Indicadores", font=fonte_titulo, anchor="center", corner_radius=20, text_color="white")
@@ -507,7 +516,7 @@ def refresh_file(file):
     xlapp.CalculateUntilAsyncQueriesDone()
     wb.Save()
     xlapp.Quit()
-######
+
 def hide_all():
     frame.pack_forget()
     frame_dist_peso.pack_forget()
@@ -629,7 +638,6 @@ def hide_filter():
   irce_menu.grid_forget()
   plotar_button.grid_forget()
 
-map_file = 'dados\\mapa_cloropleto_bahia.html'
 def mapa_cloropletico_bahia():
   global map_file
   # URL do GeoJSON
@@ -677,10 +685,14 @@ def mapa_cloropletico_bahia():
   mapa_mun_bahia.save(map_file)
   
 def show_mapa_cloropletico():
-    if os.path.exists(map_file): 
-      webview.create_window('Mapa Cloroplético de Municípios da Bahia', map_file)
+    map_file = resource_path('dados\mapa_cloropleto_bahia.html')
+    map_url = 'file://' + os.path.abspath(map_file)
+
+    if os.path.exists(map_file):
+      webview.create_window('Mapa Cloropleto - Municípios da Bahia', map_url)
       webview.start()
-    else: 
+    else:
+      print(f"Erro: Arquivo {map_file} não encontrado!")
       messagebox.showerror("Erro: Arquivo Inexistente", "Erro!.\n Clique em Salvar para visualizar o mapa")
 
 def dashboard():
@@ -688,7 +700,7 @@ def dashboard():
        wb.close()
     finally:
       global dfPlot, irce_por_mun_dce1, irce_por_mun_dce2
-      df = pd.read_excel("dados\\Matriz Modelo - VERSÃO SISTEMA.xlsx", sheet_name='MATRIZ CONTRATOS')
+      df = pd.read_excel(file, sheet_name='MATRIZ CONTRATOS')
 
       dfIDs = df.iloc[6:, 0]
       dfMunicipio = df.iloc[6:, 1]
@@ -781,11 +793,7 @@ class Botao:
     def botao_visualizar_mapa_event():
         if validar_distribuicao():
           mapa_cloropletico_bahia()
-          hide_all()
           show_mapa_cloropletico()
-          hide_filter()
-          show_all()
-          #Botao.botao_voltar_event()
         else:
            messagebox.showerror("Erro", "Salve o Arquivo para visualizar o Mapa")
 
@@ -812,15 +820,12 @@ def main():
     MainWindow.window_config(window)
 
 
-if __name__ == "__main__":
+if _name_ == "_main_":
     main()
     window.mainloop()
+    window.protocol("WM_DELETE_WINDOW", on_closing())
     try:
       exit()
     finally:
       if os.path.exists(map_file):
           os.remove(map_file)
-
-    
-    
-
