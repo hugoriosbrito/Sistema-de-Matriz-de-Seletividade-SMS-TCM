@@ -820,7 +820,7 @@ def main():
     MainWindow.window_config(window)
 
 
-if _name_ == "_main_":
+if __name__ == "_main_":
     main()
     window.mainloop()
     window.protocol("WM_DELETE_WINDOW", on_closing())
