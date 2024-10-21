@@ -45,4 +45,4 @@ python main.py
 ```
 
 <h3>Instalando o executável</h3>
-Se preferir, instale o <a href="#https://github.com/TecHugoRios/Sistema-de-Gerenciamento-de-Indicadores-TCM/releases/tag/release-v1">executável</a>, dessa forma não é necessário adicionar as bibliotecas.
+Se preferir, instale o <a href="https://github.com/TecHugoRios/Sistema-de-Gerenciamento-de-Indicadores-TCM/releases/tag/release-v1">executável</a>, dessa forma não é necessário adicionar as bibliotecas.
