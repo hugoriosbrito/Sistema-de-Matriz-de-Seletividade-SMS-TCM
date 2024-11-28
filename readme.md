@@ -1,5 +1,5 @@
 
-<h1 align="center" style="font-weight: bold;">Sistema de Gerenciamento de Indicadores 💻</h1>
+<h1 align="center" style="font-weight: bold;">Sistema de Matriz de Seletividade 💻</h1>
 
 <p align="center">
 <a href="#tech">Tecnologias</a>
@@ -11,7 +11,7 @@
 </p>
 
 
-<p align="center">Sistema para gerenciar indicadores, habilitando ou desabilitando-os afim de recalcular e formar um ranking de municípios com riscos de fraudes.</p>
+<p align="center">Sistema para gerenciar indicadores de uma matriz de seletividade, habilitando ou desabilitando-os afim de recalcular e formar um ranking de municípios com riscos de fraudes.</p>
 
 
 
@@ -39,7 +39,12 @@ git clone https://github.com/TecHugoRios/Sistema-de-Gerenciamento-de-Indicadores
 
 <h3>Iniciando</h3>
 
-Para rodar o arquivo, rode esse comando no terminal, lembre de instalar as *bibliotecas* primeiro:
+Instale as *bibliotecas* primeiro:
+```bash
+pip install -r requirements.txt
+```
+
+Para rodar o arquivo, rode esse comando no terminal:
 ```bash
 python main.py
 ```
