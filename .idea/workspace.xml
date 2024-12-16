@@ -4,45 +4,87 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a32b4653-7794-4c1e-a0a2-cb77cc2696ca" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/pythonGUI_TCM.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+    <list default="true" id="a32b4653-7794-4c1e-a0a2-cb77cc2696ca" name="Changes" comment="adicionado requirements.txt">
+      <change afterPath="$PROJECT_DIR$/report_pdf.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dados/Matriz Modelo - VERSÃO SISTEMA.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/dados/Matriz Modelo - VERSÃO SISTEMA.xlsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dados/mapa_cloropleto_bahia.html" beforeDir="false" afterPath="$PROJECT_DIR$/dados/mapa_cloropleto_bahia.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/indicadores/_indicadores.py" beforeDir="false" afterPath="$PROJECT_DIR$/indicadores/_indicadores.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/indicadores/indicadores_block.py" beforeDir="false" afterPath="$PROJECT_DIR$/indicadores/indicadores_block.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="FlaskConsoleOptions" custom-start-script="import sys&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo&#10;locals().update(ScriptInfo(create_app=None).load_app().make_shell_context())&#10;print(&quot;Python %s on %s\nApp: %s [%s]\nInstance: %s&quot; % (sys.version, sys.platform, app.import_name, app.env, app.instance_path))">
+    <envs>
+      <env key="FLASK_APP" value="app" />
+    </envs>
+    <option name="myCustomStartScript" value="import sys&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo&#10;locals().update(ScriptInfo(create_app=None).load_app().make_shell_context())&#10;print(&quot;Python %s on %s\nApp: %s [%s]\nInstance: %s&quot; % (sys.version, sys.platform, app.import_name, app.env, app.instance_path))" />
+    <option name="myEnvs">
+      <map>
+        <entry key="FLASK_APP" value="app" />
+      </map>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 7
-}]]></component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;TecHugoRios&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/TecHugoRios/pythonGUI_TCM.git&quot;,
+    &quot;accountId&quot;: &quot;e9eff418-8294-4aef-99a9-91fe9a8e5778&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 7
+}</component>
   <component name="ProjectId" id="2mcIgu1dr33Y9pHvMgRnnrSRjZd" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "master",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python._indicadores.executor&quot;: &quot;Run&quot;,
+    &quot;Python.indicadores_block.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;release&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/hugo.brito/PycharmProjects/pythonGUI_TCM&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\hugo.brito\PycharmProjects\pythonGUI_TCM\src" />
+      <recent name="C:\Users\hugo.brito\PycharmProjects\pythonGUI_TCM\indicadores" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="pythonGUI_TCM" />
@@ -85,10 +127,87 @@
       <option name="presentableId" value="Default" />
       <updated>1727369551640</updated>
       <workItem from="1727369552692" duration="458000" />
+      <workItem from="1729703560663" duration="30000" />
+      <workItem from="1731345435833" duration="9852000" />
+      <workItem from="1731613491492" duration="1945000" />
+      <workItem from="1731959399851" duration="2555000" />
+      <workItem from="1732204279878" duration="633000" />
+      <workItem from="1732211342053" duration="2000" />
+      <workItem from="1732211353028" duration="1000" />
+      <workItem from="1732213267836" duration="20000" />
+      <workItem from="1732642718368" duration="87000" />
+      <workItem from="1732642808505" duration="455000" />
+      <workItem from="1732732110197" duration="6137000" />
+      <workItem from="1732803905564" duration="16222000" />
+      <workItem from="1733158364217" duration="1159000" />
+      <workItem from="1733240357248" duration="6960000" />
+      <workItem from="1733332189154" duration="2346000" />
+      <workItem from="1733341432145" duration="2600000" />
+      <workItem from="1733421837569" duration="6517000" />
+      <workItem from="1733762126845" duration="14170000" />
+      <workItem from="1733848591954" duration="9295000" />
+      <workItem from="1733934301285" duration="7997000" />
+      <workItem from="1734021017925" duration="9376000" />
+      <workItem from="1734366966492" duration="4032000" />
     </task>
+    <task id="LOCAL-00001" summary="- Refatorei o bloco de indicadores, separando-o em dois arquivos, um que compacta a criação de todos os indicadores e outro, que é a classe dos indicadores_block.py, facilitando a criação de novos indicadores e reduzindo o código.&#10;&#10;- Adicionei Tooltips nos indicadores, para facilitar o entedimento de cada um.&#10;&#10;- Melhorei a performance, adicionando asyncio e multithreading, reduzindo o carregamento de telas e salvamento de arquivos.">
+      <option name="closed" value="true" />
+      <created>1732822130007</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1732822130007</updated>
+    </task>
+    <task id="LOCAL-00002" summary="- Refatorei o bloco de indicadores, separando-o em dois arquivos, um que compacta a criação de todos os indicadores e outro, que é a classe dos indicadores_block.py, facilitando a criação de novos indicadores e reduzindo o código.&#10;&#10;- Adicionei Tooltips nos indicadores, para facilitar o entedimento de cada um.&#10;&#10;- Melhorei a performance, adicionando asyncio e multithreading, reduzindo o carregamento de telas e salvamento de arquivos.">
+      <option name="closed" value="true" />
+      <created>1732822215113</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1732822215113</updated>
+    </task>
+    <task id="LOCAL-00003" summary="- Refatorei o bloco de indicadores, separando-o em dois arquivos, um que compacta a criação de todos os indicadores e outro, que é a classe dos indicadores_block.py, facilitando a criação de novos indicadores e reduzindo o código.&#10;&#10;- Adicionei Tooltips nos indicadores, para facilitar o entedimento de cada um.&#10;&#10;- Melhorei a performance, adicionando asyncio e multithreading, reduzindo o carregamento de telas e salvamento de arquivos.">
+      <option name="closed" value="true" />
+      <created>1732822259448</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1732822259448</updated>
+    </task>
+    <task id="LOCAL-00004" summary="adicionado requirements.txt">
+      <option name="closed" value="true" />
+      <created>1732823192529</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1732823192529</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="- Refatorei o bloco de indicadores, separando-o em dois arquivos, um que compacta a criação de todos os indicadores e outro, que é a classe dos indicadores_block.py, facilitando a criação de novos indicadores e reduzindo o código.&#10;&#10;- Adicionei Tooltips nos indicadores, para facilitar o entedimento de cada um.&#10;&#10;- Melhorei a performance, adicionando asyncio e multithreading, reduzindo o carregamento de telas e salvamento de arquivos." />
+    <MESSAGE value="adicionado requirements.txt" />
+    <option name="LAST_COMMIT_MESSAGE" value="adicionado requirements.txt" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/pythonGUI_TCM$main.coverage" NAME="main Coverage Results" MODIFIED="1734370834952" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/pythonGUI_TCM$test.coverage" NAME="test Coverage Results" MODIFIED="1734367181765" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/pythonGUI_TCM$_indicadores.coverage" NAME="_indicadores Coverage Results" MODIFIED="1733343926949" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/indicadores" />
+    <SUITE FILE_PATH="coverage/pythonGUI_TCM$indicadores_block.coverage" NAME="indicadores_block Coverage Results" MODIFIED="1731352681172" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
