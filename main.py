@@ -4,14 +4,16 @@ import customtkinter as ctk
 from tkinter import messagebox
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MaxNLocator
+from matplotlib import rcParams
+import numpy as np
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import os, sys, win32com.client
 import folium
 import webview
 import asyncio
-from asyncio import create_task
-import threading
 from indicadores.indicadores_block import indicadores_block
+from pdf_report.report_pdf import criarPDF, getPesos
 
 icon ="src\\icon.ico"
 map_file = "dados\\mapa_cloropleto_bahia.html"
@@ -60,8 +62,20 @@ frame_botoes.pack(fill='both', padx=20)
 frame_dist_peso = ctk.CTkFrame(master=window, border_width=0, corner_radius=20, bg_color="#2F83D7", fg_color="#2F83D7", height=20)
 frame_dist_peso.pack(fill = 'both', padx = 20)
 
-frame = ctk.CTkScrollableFrame(master=window, border_width=0, corner_radius=20, bg_color="#2F83D7", fg_color="#2F83D7", height=250, scrollbar_button_color="white")
+frame = ctk.CTkScrollableFrame(
+    master=window,
+    border_width=0,
+    corner_radius=20,
+    bg_color="#2F83D7",
+    fg_color="#2F83D7",
+    height=250,
+    scrollbar_button_color="#D9D9D9",
+    scrollbar_button_hover_color="#FFFFFF",
+)
 frame.pack(fill='both', padx=20,pady=10,expand=1)
+
+frame.update_idletasks()
+frame.update()
 
 frame.grid_columnconfigure(0,weight=1)
 frame.grid_columnconfigure(1,weight=1)
@@ -82,11 +96,8 @@ tipos_fonte = ctk.CTkFont(family='Arial', size= 15, weight= "bold")
 # se a soma for igual a 100, a mensagem é de sucesso, e é salvo, se não, a mensagem é de erro apenas, sem salvamento
 
 def validar_distribuicao():
-      list_pesos = salvar_indicadores(value=0)
-      if sum(list_pesos) == 100:
-        return True
-      else:
-        return False
+    list_pesos = salvar_indicadores(value=0)
+    if sum(list_pesos) == 100:return True
 
 def salvar_indicadores(value):
       tipo_risco = tipo_risco_var.get()
@@ -114,6 +125,7 @@ def salvar_indicadores(value):
       sheet['F6'] = tipo_relevancia/100
       sheet['F7'] = tipo_oportunidade/100
 
+      getPesos(indicadores_pesos)
       return indicadores_pesos
 
 
@@ -150,18 +162,26 @@ frame_dist_peso.columnconfigure(4,weight=1)
 def bloco_indicadores():
     indicadores_block(frame=frame,sheet=sheet)
 
-
-
 #----------------------------------------------------------------------------------------------------------------------------------
 
+xlapp = None
+
+def get_excel_app():
+    global xlapp
+    if not xlapp:
+        xlapp = win32com.client.DispatchEx("Excel.Application")
+    return xlapp
+
 def refresh_file(file):
-    xlapp = win32com.client.DispatchEx("Excel.Application")
+    xlapp = get_excel_app()
     path = os.path.abspath(file)
-    wb =  xlapp.Workbooks.Open(path)
-    wb.RefreshAll()
-    xlapp.CalculateUntilAsyncQueriesDone()
-    wb.Save()
-    xlapp.Quit()
+    wb = xlapp.Workbooks.Open(path)
+    try:
+        wb.RefreshAll()
+        xlapp.CalculateUntilAsyncQueriesDone()
+        wb.Save()
+    finally:
+        wb.Close(False)
 
 def hide_all():
     frame.pack_forget()
@@ -171,52 +191,100 @@ def show_all():
     frame_dist_peso.pack(fill='both', padx=20)
     frame.pack(fill='both', padx=20, pady=10, expand=1)
 
+# Frames principais
 frame_ranking_geral = ctk.CTkFrame(master=window,fg_color='#3C91E6')
 frame_plotagem_ranking_geral = ctk.CTkFrame(master=frame_ranking_geral, fg_color='#3C91E6')
 
-filter_button_frame = ctk.CTkFrame(master=frame_ranking_geral, fg_color="#3C91E6")
-filter_button_frame.grid(padx=10, pady=10,sticky="nsew",column=1)
+frame_ranking_filtrado = ctk.CTkFrame(master=frame_ranking_geral, fg_color="#3C91E6", width=1000)
+frame_ranking_filtrado.grid(padx=10, pady=5,sticky="nsew",column=1)
 
-frame_plotagem_ranking_filtrado = ctk.CTkFrame(master=filter_button_frame, fg_color='#3C91E6')
-frame_plotagem_ranking_filtrado.grid(padx=10, column=1, row=3)
+frame_plotagem_ranking_filtrado = ctk.CTkFrame(master=frame_ranking_filtrado, fg_color='#3C91E6',width=1000)
+frame_plotagem_ranking_filtrado.grid(padx=10, pady=5, row=0, column=0)
+
+frame_botoes_ranking_filtrado = ctk.CTkFrame(master=frame_ranking_filtrado, fg_color='#3C91E6',width=1000)
+frame_botoes_ranking_filtrado.grid(padx=10, row=1, column=0, sticky='w')
 
 
 def plotar_ranking_geral(dfPlot):
     global canvas, frame_ranking_geral
+    corGeral = "white"
     dfTop50 = dfPlot.head(50)
 
-    # Garantindo que o ranking geral será mostrado ao plotar
-    frame_ranking_geral.pack(expand=True,fill='both')
-    frame_plotagem_ranking_geral.grid(padx=10,row=0,column=0)
+    frame_ranking_geral.pack(expand=True, fill='both')
+    frame_plotagem_ranking_geral.grid(padx=5, row=0, column=0)
 
-    fig = plt.figure(figsize=(8, 7.5))
+    # Configurações gerais do estilo
+    rcParams.update({
+        "axes.edgecolor": f"{corGeral}",
+        "axes.grid": False,
+        "axes.titleweight": "bold",
+        "font.family": "Arial",
+        "font.size": 10,
+    })
 
-    # Plotagem do ranking
-    plt.barh(dfTop50['municipio'], dfTop50['nota'], color='#D03645',height=0.5)
-    plt.gca().invert_yaxis()
+    fig, ax = plt.subplots(figsize=(10, 8))
 
-    plt.xlabel('Nota', fontsize=12, color='white')
-    plt.ylabel('Município', fontsize=12, color='white')
-    plt.title('Top 50 Municípios por Nota', fontsize=14, color='white')
+    # Gradiente de vermelho (#D03645) para amarelo (#d0cd36)
+    red = np.array([208, 54, 69]) / 255
+    green = np.array([208, 205, 54]) / 255
 
-    plt.gca().set_facecolor("#3C91E6")
+    gradients = [red + (green - red) * (i / len(dfTop50)) for i in range(len(dfTop50))]
+
+    # Aplicação do gradiente como cores das barras
+    bars = ax.barh(
+        dfTop50['municipio'],
+        dfTop50['nota'],
+        color=gradients,
+        height=0.6,  # Ajustando a altura das barras
+        linewidth=0.5
+    )
+
+    ax.invert_yaxis()  # Inverter a ordem dos municípios
+    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+
+    # Ajustando a largura das margens para os nomes
+    ax.set_xlim([0, 100])  # Aumentando o limite do eixo X
+    ax.set_xlabel("Nota", fontsize=12, color=f"{corGeral}", labelpad=15)
+    ax.set_ylabel("Município", fontsize=12, color=f"{corGeral}", labelpad=15)
+    ax.set_title("Top 50 Municípios por Nota", fontsize=16, color=f"{corGeral}", pad=20)
+
+    # Fundo
+    ax.set_facecolor("#3C91E6")
     fig.patch.set_facecolor("#3C91E6")
 
-    plt.gca().tick_params(axis='y', colors='white')
-    plt.gca().tick_params(axis='x', colors='white')
+    # Cor e tamanho dos ticks
+    ax.tick_params(axis='y', colors=f"{corGeral}", which="major", labelsize=8.5)
+    ax.tick_params(axis='x', colors=f"{corGeral}", which="major", labelsize=8.5)
 
-    plt.tight_layout()
-    #plt.autoscale(enable=True, axis='both')
+    # Adiciona valores ao final das barras
+    for bar in bars:
+        ax.text(
+            bar.get_width() + 1.0,  # Ajustando posição X para os valores
+            bar.get_y() + bar.get_height() / 2,  # Posição central no eixo Y
+            f"{bar.get_width():.1f}",  # Valor formatado
+            va="center", ha="left", fontsize=9, color=corGeral
+        )
 
+    # Rotacionando os nomes dos municípios para melhorar a legibilidade
+    plt.yticks(rotation=0)
+
+    plt.tight_layout()  # Ajustando o layout para evitar corte
 
     # Limpando o frame antes de desenhar o novo gráfico
     for widget in frame_plotagem_ranking_geral.winfo_children():
         widget.destroy()
 
-
+    # Adiciona o gráfico ao frame
     canvas = FigureCanvasTkAgg(fig, master=frame_plotagem_ranking_geral)
     canvas.draw()
-    canvas.get_tk_widget().grid(padx=20,sticky='nsew', pady=10,column=0)
+    canvas.get_tk_widget().grid(padx=10, sticky='nsew', pady=10, column=0)
+
+    try:
+        plt.savefig("src/report1.png", bbox_inches='tight', dpi=400)
+        print("ranking geral salvo (report1.png)")
+    except:
+        print("Erro em salvar ranking geral (report1.png)")
+
 
 def plotar_ranking_filtrado():
     selected_dce = dce_var.get()
@@ -224,8 +292,10 @@ def plotar_ranking_filtrado():
 
     if selected_dce == '1ª DCE':
         df_filtrado = dfPlot[(dfPlot['dce'] == '1ª DCE') & (dfPlot['irce'] == selected_irce)]
+        print(df_filtrado)
     elif selected_dce == '2ª DCE':
         df_filtrado = dfPlot[(dfPlot['dce'] == '2ª DCE') & (dfPlot['irce'] == selected_irce)]
+        print(df_filtrado)
     else:
         messagebox.showerror("Erro", "Selecione uma DCE e uma IRCE válidas")
         return
@@ -243,12 +313,15 @@ def plotar_ranking_filtrado():
     plt.gca().invert_yaxis()
     plt.xlabel('Nota', fontsize=12, color='white')
     plt.ylabel('Município', fontsize=12, color='white')
-    plt.title(f'      Municípios da IRCE {selected_irce} ({selected_dce})', fontsize=15, color='white')
+    plt.title(f'{selected_irce} ({selected_dce})', fontsize=12, color='white')
     plt.gca().set_facecolor("#3C91E6")  # Fundo do gráfico
     fig.patch.set_facecolor("#3C91E6")  # Fundo da figura
     plt.gca().tick_params(axis='y', colors='white')
     plt.gca().tick_params(axis='x', colors='white')
+
     plt.tight_layout()
+    #fig.subplots_adjust(left=1, right=1)
+
 
     # Limpando o frame antes de desenhar o novo gráfico
     for widget in frame_plotagem_ranking_filtrado.winfo_children():
@@ -257,32 +330,40 @@ def plotar_ranking_filtrado():
     # Adicionando o gráfico à interface
     canvas = FigureCanvasTkAgg(fig, master=frame_plotagem_ranking_filtrado)
     canvas.draw()
-    canvas.get_tk_widget().grid(padx=10, pady=10,column=3,row=4)
+    canvas.get_tk_widget().grid(padx=10, pady=5, column=0, row=0)
+    try:
+        plt.savefig("src/report2.png", bbox_inches='tight', dpi=400)
+        print("ranking filtrado salvo (report2.png)")
+    except:
+        print("Erro em salvar ranking filtrado (report2.png)")
 
 
-
-# Variável para armazenar a DCE selecionada
 dce_var = ctk.StringVar()
-#Botão de lista para selecionar 1ª ou 2ª DCE
-dce_text= ctk.CTkLabel(master=filter_button_frame,text='DCE', font=fonte_geral_texto,text_color='white')
-dce_menu = ctk.CTkOptionMenu(master=filter_button_frame, variable=dce_var, values=['1ª DCE', '2ª DCE'], command=lambda _: atualizar_irces())
-# Botão de lista para mostrar IRCEs de acordo com a DCE
 irce_var = ctk.StringVar()
-irce_text= ctk.CTkLabel(master=filter_button_frame,text='IRCE', font=fonte_geral_texto, text_color='white')
-irce_menu = ctk.CTkOptionMenu(master=filter_button_frame, variable=irce_var, values=[])
-# Botão para plotar o gráfico baseado na filtragem
-plotar_button = ctk.CTkButton(master=filter_button_frame, text="Plotar Ranking", command=plotar_ranking_filtrado)
+
+dce_label = ctk.CTkLabel(frame_botoes_ranking_filtrado, text="DCE", text_color="white")
+dce_menu = ctk.CTkOptionMenu(frame_botoes_ranking_filtrado, variable=dce_var, values=["1ª DCE", "2ª DCE"], command=lambda _: atualizar_irces())
+
+irce_label = ctk.CTkLabel(frame_botoes_ranking_filtrado, text="IRCE", text_color="white")
+irce_menu = ctk.CTkOptionMenu(frame_botoes_ranking_filtrado, variable=irce_var, values=[])
+
+plotar_button = ctk.CTkButton(frame_botoes_ranking_filtrado, text="Plotar Ranking", command=plotar_ranking_filtrado)
+report_download_button = ctk.CTkButton(frame_botoes_ranking_filtrado, text="Download Relatório", command=criarPDF)
 
 def show_filter():
-  dce_text.grid(padx=10,column=0,row=0)
-  dce_menu.grid(padx=10,pady=5, column=1,row=0,sticky='e')
-  irce_text.grid(padx=10,column=0,row=1)
-  irce_menu.grid(padx=10,pady=5, column=1,row=1,sticky='e')
-  plotar_button.grid(padx=10,pady=5, column=1,row=2,sticky='e')
+    dce_label.grid(padx=10, pady=5, row=0, column=0, sticky='w')
+    dce_menu.grid(padx=10, pady=5, row=0, column=1, sticky='w')
+
+    irce_label.grid(padx=10, pady=5, row=1, column=0, sticky='w')
+    irce_menu.grid(padx=10, pady=5, row=1, column=1, sticky='w')
+
+    plotar_button.grid(padx=20, pady=5, row=2, column=0, sticky='w')
+    report_download_button.grid(padx=20, pady=5, row=2, column=1, sticky='w')
 def hide_filter():
   dce_menu.grid_forget()
   irce_menu.grid_forget()
   plotar_button.grid_forget()
+  report_download_button.grid_forget()
 
 def mapa_cloropletico_bahia():
   global map_file
@@ -365,20 +446,32 @@ def dashboard():
 
       dfPlot = pd.DataFrame(novo_df)
       dfPlot = dfPlot.sort_values(by='nota', ascending=False)
+      dfPlot['irce'] = list(map(lambda x: " ".join(x.split()), list(dfPlot['irce'])))
+      print(f"IRCEs: {dfPlot['irce']}")
       #print(f'id:{novo_df["id"]},\nmunicipio:{novo_df["municipio"]},\nnota:{novo_df["nota"]}')
       dce_1, dce_2 = '1ª DCE', '2ª DCE'
 
       # IRCEs associadas à 1ª e 2ª DCE
       df_1_DCE = dfPlot[dfPlot['dce'] == dce_1]
       df_2_DCE = dfPlot[dfPlot['dce'] == dce_2]
+      #print(df_1_DCE)
+      #print(df_2_DCE)
 
       # Listas de IRCEs únicas para cada DCE
       irce_list_dce1 = df_1_DCE['irce'].drop_duplicates().tolist()
+      irce_list_dce1_2 = list(map(lambda x: " ".join(x.split()), irce_list_dce1))
       irce_list_dce2 = df_2_DCE['irce'].drop_duplicates().tolist()
+      irce_list_dce2_2 = list(map(lambda x: " ".join(x.split()), irce_list_dce2))
+
+      #print(irce_list_dce1_2)
+      #print(irce_list_dce2_2)
 
       # Criando dicionários com IRCEs como chaves e municípios como valores
-      irce_por_mun_dce1 = {irce: df_1_DCE[df_1_DCE['irce'].str.strip() == irce.strip()]['municipio'].tolist() for irce in irce_list_dce1}
-      irce_por_mun_dce2 = {irce: df_2_DCE[df_2_DCE['irce'].str.strip() == irce.strip()]['municipio'].tolist() for irce in irce_list_dce2}
+      irce_por_mun_dce1 = {irce: df_1_DCE[df_1_DCE['irce'].str.strip() == irce.strip()]['municipio'].tolist() for irce in irce_list_dce1_2}
+      irce_por_mun_dce2 = {irce: df_2_DCE[df_2_DCE['irce'].str.strip() == irce.strip()]['municipio'].tolist() for irce in irce_list_dce2_2}
+
+      #print(irce_por_mun_dce1)
+      #print(irce_por_mun_dce2)
 
       plotar_ranking_geral(dfPlot)
 
@@ -386,15 +479,18 @@ def atualizar_irces():
     selected_dce = dce_var.get()
 
     if selected_dce == '1ª DCE':
-        irce_menu.configure(values=list(irce_por_mun_dce1.keys()))
+        mun_list_dce1 = list(irce_por_mun_dce1.keys())
+        #mun_list_dce1_2 = list(map(lambda x: x.upper(), mun_list_dce1))
+        irce_menu.configure(values=mun_list_dce1)
     elif selected_dce == '2ª DCE':
-        irce_menu.configure(values=list(irce_por_mun_dce2.keys()))
-        irce_menu.set('                                        ')  # Limpar a seleção da IRCE
+        mun_list_dce2 = list(irce_por_mun_dce2.keys())
+        #mun_list_dce2_2 = list(map(lambda x: x.upper(), mun_list_dce2))
+        irce_menu.configure(values=mun_list_dce2)
+        irce_menu.set('')
 
-#-----------------------------------------------------------------------------------------------------------------------------------------
-import time
+    #-----------------------------------------------------------------------------------------------------------------------------------------
 async def show_loading_text():
-    for i in range(5):
+    for i in range(7):
         window.title(f"Sistema de Matriz de Seletividade (Carregando.)")
         await asyncio.sleep(0.3)
         window.title(f"Sistema de Matriz de Seletividade (Carregando..)")
@@ -411,16 +507,16 @@ def hide_loading_text():
    window.title('Sistema de Matriz de Seletividade')
 
 async def main_save_task():
-    # Mostra animação de carregando
-    loading_task = asyncio.create_task(show_loading_text())
+    try:
+        loading_task = asyncio.create_task(show_loading_text())
+        await asyncio.to_thread(save_file_and_refresh, file)
+        messagebox.showinfo("Sucesso", "Alterações salvas com sucesso!", icon='info')
+    except Exception as e:
+        messagebox.showerror("Erro", f"Falha ao salvar: {e}")
+    finally:
+        loading_task.cancel()
+        hide_loading_text()
 
-    # Salva arquivo em uma thread separada
-    await asyncio.to_thread(save_file_and_refresh, file)
-
-    loading_task.cancel()
-    hide_loading_text()
-
-    messagebox.showinfo("Sucesso", "Alterações salvas com sucesso!", icon='info')
 
 
 fonte_botao=ctk.CTkFont("Arial",size=15,weight='bold')
@@ -473,19 +569,18 @@ def botao_voltar_event():
   canvas.get_tk_widget().destroy()
   frame_ranking_geral.pack_forget()
 
-
 bloco_indicadores()
 botao_salvar_config(frame_botoes)
 botao_visualizar_dashboard_config(frame_botoes)
 botao_voltar_config(frame_botoes)
 botao_visualizar_mapa_config(frame_botoes)
+salvar_indicadores(value=0)
+def on_motion(event):
+    window.update_idletasks()
+
+window.bind("<B1-Motion>", on_motion)
+window.wm_attributes("-transparentcolor", "")
 
 MainWindow.window_config(window)
+window.protocol("WM_DELETE_WINDOW", on_closing)
 window.mainloop()
-
-with window.protocol("WM_DELETE_WINDOW", on_closing):
-    try:
-      exit()
-    finally:
-      if os.path.exists(map_file):
-        os.remove(map_file)
