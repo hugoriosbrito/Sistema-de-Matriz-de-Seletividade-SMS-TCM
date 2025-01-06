@@ -17,7 +17,7 @@ from pdf_report.report_pdf import criarPDF, getPesos
 
 icon ="src\\icon.ico"
 map_file = "dados\\mapa_cloropleto_bahia.html"
-file = "dados\\Matriz modelo - VERSÃO SISTEMA.xlsx"
+file = "dados\\Matriz Modelo- VERSÃO SISTEMA - ATUAL.xlsx"
 wb = xl.load_workbook(file)
 sheet = wb['SÍNTESE']
 
@@ -243,10 +243,11 @@ def plotar_ranking_geral(dfPlot):
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 
     # Ajustando a largura das margens para os nomes
-    ax.set_xlim([0, 100])  # Aumentando o limite do eixo X
+    ax.set_xlim([dfTop50['nota'].min() - 1, dfTop50['nota'].max() + 1])
     ax.set_xlabel("Nota", fontsize=12, color=f"{corGeral}", labelpad=15)
     ax.set_ylabel("Município", fontsize=12, color=f"{corGeral}", labelpad=15)
     ax.set_title("Top 50 Municípios por Nota", fontsize=16, color=f"{corGeral}", pad=20)
+    print(dfTop50)
 
     # Fundo
     ax.set_facecolor("#3C91E6")
@@ -259,7 +260,7 @@ def plotar_ranking_geral(dfPlot):
     # Adiciona valores ao final das barras
     for bar in bars:
         ax.text(
-            bar.get_width() + 1.0,  # Ajustando posição X para os valores
+            bar.get_width() + 0.3,  # Ajustando posição X para os valores
             bar.get_y() + bar.get_height() / 2,  # Posição central no eixo Y
             f"{bar.get_width():.1f}",  # Valor formatado
             va="center", ha="left", fontsize=9, color=corGeral
@@ -318,9 +319,9 @@ def plotar_ranking_filtrado():
     fig.patch.set_facecolor("#3C91E6")  # Fundo da figura
     plt.gca().tick_params(axis='y', colors='white')
     plt.gca().tick_params(axis='x', colors='white')
+    plt.xlim([df_filtrado['nota'].min() - 1, df_filtrado['nota'].max() + 1])
 
     plt.tight_layout()
-    #fig.subplots_adjust(left=1, right=1)
 
 
     # Limpando o frame antes de desenhar o novo gráfico
@@ -446,9 +447,10 @@ def dashboard():
 
       dfPlot = pd.DataFrame(novo_df)
       dfPlot = dfPlot.sort_values(by='nota', ascending=False)
+      print(dfPlot.head(50))
       dfPlot['irce'] = list(map(lambda x: " ".join(x.split()), list(dfPlot['irce'])))
-      print(f"IRCEs: {dfPlot['irce']}")
-      #print(f'id:{novo_df["id"]},\nmunicipio:{novo_df["municipio"]},\nnota:{novo_df["nota"]}')
+      #print(f"IRCEs:\n {dfPlot['irce']}")
+      print(f'id:{dfPlot["id"].head(50)},\nmunicipio:{dfPlot["municipio"].head(50)},\nnota:{dfPlot["nota"].head(50)}')
       dce_1, dce_2 = '1ª DCE', '2ª DCE'
 
       # IRCEs associadas à 1ª e 2ª DCE
@@ -472,7 +474,7 @@ def dashboard():
 
       #print(irce_por_mun_dce1)
       #print(irce_por_mun_dce2)
-
+      print(dfPlot)
       plotar_ranking_geral(dfPlot)
 
 def atualizar_irces():
@@ -507,6 +509,7 @@ def hide_loading_text():
    window.title('Sistema de Matriz de Seletividade')
 
 async def main_save_task():
+    global loading_task
     try:
         loading_task = asyncio.create_task(show_loading_text())
         await asyncio.to_thread(save_file_and_refresh, file)
@@ -563,11 +566,11 @@ def botao_voltar_config(frame_botoes):
     botao_voltar.grid(pady=(10, 10), padx=20, sticky="w",row=10,column=3)
 
 def botao_voltar_event():
-  show_all()
-  hide_filter()
+    show_all()
+    hide_filter()
 
-  canvas.get_tk_widget().destroy()
-  frame_ranking_geral.pack_forget()
+    canvas.get_tk_widget().destroy()
+    frame_ranking_geral.pack_forget()
 
 bloco_indicadores()
 botao_salvar_config(frame_botoes)
@@ -575,6 +578,7 @@ botao_visualizar_dashboard_config(frame_botoes)
 botao_voltar_config(frame_botoes)
 botao_visualizar_mapa_config(frame_botoes)
 salvar_indicadores(value=0)
+
 def on_motion(event):
     window.update_idletasks()
 

@@ -4,15 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a32b4653-7794-4c1e-a0a2-cb77cc2696ca" name="Changes" comment="adicionado requirements.txt">
-      <change afterPath="$PROJECT_DIR$/report_pdf.py" afterDir="false" />
+    <list default="true" id="a32b4653-7794-4c1e-a0a2-cb77cc2696ca" name="Changes" comment="foi adicionado:&#10;- Criação de relatório em PDF que consta a porcentagem de pesos e indicadores utilizados, além dos gráficos gerado.&#10;&#10;foi alterado:&#10;- layout do dashboard e graficos geral.">
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/pythonGUI_TCM.iml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dados/Matriz Modelo - VERSÃO SISTEMA.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/dados/Matriz Modelo - VERSÃO SISTEMA.xlsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dados/mapa_cloropleto_bahia.html" beforeDir="false" afterPath="$PROJECT_DIR$/dados/mapa_cloropleto_bahia.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/indicadores/_indicadores.py" beforeDir="false" afterPath="$PROJECT_DIR$/indicadores/_indicadores.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/indicadores/indicadores_block.py" beforeDir="false" afterPath="$PROJECT_DIR$/indicadores/indicadores_block.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pdf_report/report_pdf.py" beforeDir="false" afterPath="$PROJECT_DIR$/pdf_report/report_pdf.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/report1.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/report1.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/report2.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/report2.png" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,13 +65,14 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;ASKED_MARK_IGNORED_FILES_AS_EXCLUDED&quot;: &quot;true&quot;,
     &quot;Python._indicadores.executor&quot;: &quot;Run&quot;,
     &quot;Python.indicadores_block.executor&quot;: &quot;Run&quot;,
     &quot;Python.main.executor&quot;: &quot;Run&quot;,
     &quot;Python.test.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;release&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/hugo.brito/PycharmProjects/pythonGUI_TCM&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/hugo.brito/PycharmProjects/Estudo/machine-learning&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -81,13 +84,72 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\hugo.brito\PycharmProjects\pythonGUI_TCM\pdf_report" />
       <recent name="C:\Users\hugo.brito\PycharmProjects\pythonGUI_TCM\src" />
       <recent name="C:\Users\hugo.brito\PycharmProjects\pythonGUI_TCM\indicadores" />
     </key>
   </component>
   <component name="RunManager">
+    <configuration default="true" type="DjangoTestsConfigurationType">
+      <module name="Sistema de Matriz de Seletividade - SMS" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="TARGET" value="" />
+      <option name="SETTINGS_FILE" value="" />
+      <option name="CUSTOM_SETTINGS" value="false" />
+      <option name="USE_OPTIONS" value="false" />
+      <option name="OPTIONS" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="PyBehaveRunConfigurationType" factoryName="Behave">
+      <module name="Sistema de Matriz de Seletividade - SMS" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="ADDITIONAL_ARGS" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
+      <module name="Sistema de Matriz de Seletividade - SMS" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
-      <module name="pythonGUI_TCM" />
+      <module name="Sistema de Matriz de Seletividade - SMS" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -107,6 +169,103 @@
       <option name="MODULE_MODE" value="false" />
       <option name="REDIRECT_INPUT" value="false" />
       <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="Python.FlaskServer">
+      <module name="Sistema de Matriz de Seletividade - SMS" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="launchJavascriptDebuger" value="false" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="Tox" factoryName="Tox">
+      <module name="Sistema de Matriz de Seletividade - SMS" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="docs" factoryName="Docutils task">
+      <module name="Sistema de Matriz de Seletividade - SMS" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="docutils_input_file" value="" />
+      <option name="docutils_output_file" value="" />
+      <option name="docutils_params" value="" />
+      <option name="docutils_task" value="" />
+      <option name="docutils_open_in_browser" value="false" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="docs" factoryName="Sphinx task">
+      <module name="Sistema de Matriz de Seletividade - SMS" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="docutils_input_file" value="" />
+      <option name="docutils_output_file" value="" />
+      <option name="docutils_params" value="" />
+      <option name="docutils_task" value="" />
+      <option name="docutils_open_in_browser" value="false" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Autodetect">
+      <module name="Sistema de Matriz de Seletividade - SMS" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Doctests">
+      <module name="Sistema de Matriz de Seletividade - SMS" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
       <method v="2" />
     </configuration>
   </component>
@@ -148,7 +307,11 @@
       <workItem from="1733848591954" duration="9295000" />
       <workItem from="1733934301285" duration="7997000" />
       <workItem from="1734021017925" duration="9376000" />
-      <workItem from="1734366966492" duration="4032000" />
+      <workItem from="1734366966492" duration="5077000" />
+      <workItem from="1734376781995" duration="3808000" />
+      <workItem from="1734453163996" duration="1959000" />
+      <workItem from="1734541254377" duration="4000" />
+      <workItem from="1736185562528" duration="7500000" />
     </task>
     <task id="LOCAL-00001" summary="- Refatorei o bloco de indicadores, separando-o em dois arquivos, um que compacta a criação de todos os indicadores e outro, que é a classe dos indicadores_block.py, facilitando a criação de novos indicadores e reduzindo o código.&#10;&#10;- Adicionei Tooltips nos indicadores, para facilitar o entedimento de cada um.&#10;&#10;- Melhorei a performance, adicionando asyncio e multithreading, reduzindo o carregamento de telas e salvamento de arquivos.">
       <option name="closed" value="true" />
@@ -182,7 +345,23 @@
       <option name="project" value="LOCAL" />
       <updated>1732823192529</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="foi adicionado:">
+      <option name="closed" value="true" />
+      <created>1734371329495</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1734371329495</updated>
+    </task>
+    <task id="LOCAL-00006" summary="foi adicionado:&#10;- Criação de relatório em PDF que consta a porcentagem de pesos e indicadores utilizados, além dos gráficos gerado.&#10;&#10;foi alterado:&#10;- layout do dashboard e graficos geral.">
+      <option name="closed" value="true" />
+      <created>1734371440766</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1734371440766</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -202,12 +381,15 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="- Refatorei o bloco de indicadores, separando-o em dois arquivos, um que compacta a criação de todos os indicadores e outro, que é a classe dos indicadores_block.py, facilitando a criação de novos indicadores e reduzindo o código.&#10;&#10;- Adicionei Tooltips nos indicadores, para facilitar o entedimento de cada um.&#10;&#10;- Melhorei a performance, adicionando asyncio e multithreading, reduzindo o carregamento de telas e salvamento de arquivos." />
     <MESSAGE value="adicionado requirements.txt" />
-    <option name="LAST_COMMIT_MESSAGE" value="adicionado requirements.txt" />
+    <MESSAGE value="foi adicionado:" />
+    <MESSAGE value="foi adicionado:&#10;- Criação de relatório em PDF que consta a porcentagem de pesos e indicadores utilizados, além dos gráficos gerado.&#10;&#10;foi alterado:&#10;- layout do dashboard e graficos geral." />
+    <option name="LAST_COMMIT_MESSAGE" value="foi adicionado:&#10;- Criação de relatório em PDF que consta a porcentagem de pesos e indicadores utilizados, além dos gráficos gerado.&#10;&#10;foi alterado:&#10;- layout do dashboard e graficos geral." />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/pythonGUI_TCM$main.coverage" NAME="main Coverage Results" MODIFIED="1734370834952" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/pythonGUI_TCM$main.coverage" NAME="main Coverage Results" MODIFIED="1734454478895" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/pythonGUI_TCM$test.coverage" NAME="test Coverage Results" MODIFIED="1734367181765" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/pythonGUI_TCM$_indicadores.coverage" NAME="_indicadores Coverage Results" MODIFIED="1733343926949" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/indicadores" />
+    <SUITE FILE_PATH="coverage/Sistema_de_Matriz_de_Seletividade___SMS$main.coverage" NAME="main Coverage Results" MODIFIED="1736193878812" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/pythonGUI_TCM$indicadores_block.coverage" NAME="indicadores_block Coverage Results" MODIFIED="1731352681172" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

@@ -1,5 +1,8 @@
 from indicadores._indicadores import Indicador
 import customtkinter as ctk
+import openpyxl as xl
+from unidecode import unidecode
+
 
 def indicadores_block(frame,sheet):
     """"
@@ -23,6 +26,24 @@ def indicadores_block(frame,sheet):
     Indicadores:
     """
 
+    wb = xl.load_workbook("dados/Matriz Modelo- VERSÃO SISTEMA - ATUAL.xlsx")
+    sheet_sintese = wb['SÍNTESE']
+
+    mylist = []
+    for col in sheet_sintese['A']:
+        mylist.append(col.value)
+
+    num = 11
+    for linha in mylist[11:51]:
+        Indicador(tipo=unidecode(sheet[f'D{num}'].value).lower(),
+                  nome=sheet[f'B{num}'].value,
+                  descricao='TESTE',
+                  celula_xlsx=f'F{num}',
+                  sheet=sheet,
+                  frame=frame)
+        num += 1
+
+"""
     #Tipo Risco
     i_historico_parecer_previo_ultimos_3_anos = Indicador(tipo="risco",
                                                           nome="HISTÓRICO PARECER PRÉVIO",
@@ -132,14 +153,13 @@ def indicadores_block(frame,sheet):
 
 
     #Tipo Oportunidade
-
     i_DATA_ULTIMA_AUDITORIA_3DCE = Indicador(tipo="oportunidade",
                                            nome="DATA ÚLTIMA AUDITORIA (3DCE)",
                                            descricao='indicador teste oportunidade',
                                            celula_xlsx='F12',
                                            sheet=sheet,
                                            frame=frame)
-
+"""
 
 
 

@@ -11,7 +11,7 @@ def getPesos(pesos):
     lista_pesos = pesos
 
 def criarPDF():
-    logo_path = "../src/logo_tcm.jpg"
+    logo_path = "src/logo_tcm.jpg"
     graph_path1 = "src/report1.png"
     graph_path2 = "src/report2.png"
 
@@ -121,6 +121,7 @@ def criarPDF():
 
     # Página 4: Gráfico 2
     try:
+        graph_width, graph_height = 460, 460
         pdf.setFont("Helvetica-Bold", 14)
         pdf.drawCentredString(page_width / 2, page_height - 200, "Ranking Específico")
         pdf.drawImage(
