@@ -12,7 +12,7 @@ class Indicador:
                    2: 1,
                    3: 1}
 
-    def __init__(self, tipo, nome, celula_xlsx,descricao, sheet,frame):
+    def __init__(self, tipo, nome, celula_xlsx,descricao,sheet,frame):
         self.tipo = tipo
         self.nome = nome
         self.celula_xlsx = celula_xlsx
@@ -21,6 +21,7 @@ class Indicador:
         self.switch_var = ctk.StringVar(value="NÃO")
         self.frame=frame
 
+        #print(f"{self.nome}:{self.celula_xlsx}, valor: {self.switch_var.get()}")
         self.criarFrame(master=frame)
 
     def criarFrame(self, master):

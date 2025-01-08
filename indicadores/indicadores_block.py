@@ -42,7 +42,6 @@ def indicadores_block(frame,sheet):
                   sheet=sheet,
                   frame=frame)
         num += 1
-
 """
     #Tipo Risco
     i_historico_parecer_previo_ultimos_3_anos = Indicador(tipo="risco",
@@ -160,10 +159,3 @@ def indicadores_block(frame,sheet):
                                            sheet=sheet,
                                            frame=frame)
 """
-
-
-
-
-
-
-

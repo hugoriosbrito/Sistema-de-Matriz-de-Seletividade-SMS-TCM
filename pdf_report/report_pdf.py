@@ -4,8 +4,10 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from indicadores import _indicadores
 from tkinter import messagebox
+import datetime
 
 lista_pesos = []
+
 def getPesos(pesos):
     global lista_pesos
     lista_pesos = pesos
@@ -66,41 +68,58 @@ def criarPDF():
         pdf.drawCentredString(page_width / 2, y_position, line)
         y_position -= 15
 
+    data_public = datetime.datetime.now()
+    data_public_str = data_public.strftime("%d/%m/%Y %H:%M")
+
+    pdf.setFont("Helvetica-Oblique", 8)
+    pdf.drawRightString(page_width - 225, 30, f"*Esse relatório foi gerado pelo Sistema de Matriz de Seletividade (SMS) em {data_public_str}")
+
     pdf.setFont("Helvetica-Oblique", 10)
-    pdf.drawRightString(page_width - 50, 30, "Página 1 de 4")
+    pdf.drawRightString(page_width - 50, 30, "Página 1 de 5")
     pdf.showPage()
 
     # Página 2: Lista de Indicadores
-    pdf.setFont("Helvetica", 12)
-    pdf.drawCentredString(page_width / 2, page_height - 100, "Indicadores Utilizados:")
+    pdf.setFont("Helvetica-Bold", 14)
+    pdf.drawCentredString(page_width / 2, page_height - 50, "Indicadores Utilizados:")
+
     try:
-        description_lines2 = _indicadores.getIndicadoresAtivos()
-        y_position = page_height - 125
-        for line in description_lines2:
-            pdf.drawCentredString(page_width / 2, y_position, f"- {line}")
-            y_position -= 15
+        indicadores_ativos = _indicadores.getIndicadoresAtivos()
+        y_position = page_height - 100
+
+        for indicador in indicadores_ativos:
+            linha_texto = f"- {indicador}"  # Formatação do texto
+            pdf.setFont("Helvetica", 12)
+            pdf.drawString(72, y_position, linha_texto)
+            y_position -= 20  # Ajuste de espaçamento entre as linhas
     except Exception as e:
         print(f"Erro ao listar indicadores: {e}")
 
-    # lista de pesos
-    pdf.setFont("Helvetica", 12)
-    pdf.drawCentredString(page_width / 2, page_height - 400, "Distribuição de Pesos Utilizada:")
-    tipos = ['Risco','Materialidade','Relevância','Oportunidade']
+    pdf.setFont("Helvetica-Oblique", 10)
+    pdf.drawRightString(page_width - 50, 30, "Página 2 de 5")
+    pdf.showPage()
+
+    # Página 3: Lista de Pesos
+    pdf.setFont("Helvetica-Bold", 14)
+    pdf.drawCentredString(page_width / 2, page_height - 50, "Distribuição de Pesos Utilizada:")
+
+    tipos = ['Risco', 'Materialidade', 'Relevância', 'Oportunidade']
     try:
         description_lines3 = lista_pesos
-        y_position = page_height - 425
+        y_position = page_height - 100
 
-        for line, tipos in zip(description_lines3,tipos):
-            pdf.drawCentredString(page_width / 2, y_position, f"- {tipos}: {line}%")
-            y_position -= 15
+        for peso, tipo in zip(description_lines3, tipos):
+            linha_texto = f"{tipo}: {peso}%"  # Formatação do texto
+            pdf.setFont("Helvetica", 12)
+            pdf.drawString(72, y_position, linha_texto)
+            y_position -= 20  # Ajuste de espaçamento entre as linhas
     except Exception as e:
         print(f"Erro ao listar pesos: {e}")
 
     pdf.setFont("Helvetica-Oblique", 10)
-    pdf.drawRightString(page_width - 50, 30, "Página 2 de 4")
+    pdf.drawRightString(page_width - 50, 30, "Página 3 de 5")
     pdf.showPage()
 
-    # Página 3: Gráfico 1
+    # Página 4: Gráfico 1
     try:
         graph_width, graph_height = 588, 460
         pdf.setFont("Helvetica-Bold", 14)
@@ -116,10 +135,10 @@ def criarPDF():
         print(f"Erro ao adicionar gráfico 1: {e}")
 
     pdf.setFont("Helvetica-Oblique", 10)
-    pdf.drawRightString(page_width - 50, 30, "Página 3 de 4")
+    pdf.drawRightString(page_width - 50, 30, "Página 4 de 5")
     pdf.showPage()
 
-    # Página 4: Gráfico 2
+    # Página 5: Gráfico 2
     try:
         graph_width, graph_height = 460, 460
         pdf.setFont("Helvetica-Bold", 14)
@@ -135,14 +154,13 @@ def criarPDF():
         print(f"Erro ao adicionar gráfico 2: {e}")
 
     pdf.setFont("Helvetica-Oblique", 10)
-    pdf.drawRightString(page_width - 50, 30, "Página 4 de 4")
+    pdf.drawRightString(page_width - 50, 30, "Página 5 de 5")
     pdf.showPage()
 
     # Salvar o PDF
     try:
         pdf.save()
-        messagebox.showinfo('Sucesso',f'Relatório criado com sucesso em: \n{fileName}')
+        messagebox.showinfo('Sucesso', f'Relatório criado com sucesso em: \n{fileName}')
         print(f"PDF criado com sucesso: {fileName}")
     except Exception as e:
-        messagebox.showerror('Erro',f'Erro ao criar relatório. {e}')
-
+        messagebox.showerror('Erro', f'Erro ao criar relatório. {e}')

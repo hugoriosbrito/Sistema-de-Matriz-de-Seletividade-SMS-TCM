@@ -87,8 +87,7 @@ frame.grid_columnconfigure(3,weight=1)
 distribuicao_fonte = ctk.CTkFont(family='Arial', size=15, weight='bold')
 distribuicao_titulo = ctk.CTkLabel(master=frame_dist_peso, text= "Distribuição de peso \n por tipo ", font=distribuicao_fonte, text_color='white', corner_radius=20, anchor="center")
 distribuicao_titulo.grid(padx=(20,20),pady=10, row = 0, column=0)
-valores = ["5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100"]
-
+valores = list(map(str,list(range(0,105,5))))
 
 tipos_fonte = ctk.CTkFont(family='Arial', size= 15, weight= "bold")
 # todas as vezes que um valor é escolhido em um  combo, ele é adicionado à uma lista e somado para verificação, mensagem de verificação
@@ -176,12 +175,14 @@ def refresh_file(file):
     xlapp = get_excel_app()
     path = os.path.abspath(file)
     wb = xlapp.Workbooks.Open(path)
+
     try:
         wb.RefreshAll()
         xlapp.CalculateUntilAsyncQueriesDone()
         wb.Save()
     finally:
-        wb.Close(False)
+        wb.Close()
+        xlapp.Quit()
 
 def hide_all():
     frame.pack_forget()
@@ -323,7 +324,6 @@ def plotar_ranking_filtrado():
 
     plt.tight_layout()
 
-
     # Limpando o frame antes de desenhar o novo gráfico
     for widget in frame_plotagem_ranking_filtrado.winfo_children():
         widget.destroy()
@@ -433,7 +433,7 @@ def dashboard():
 
       dfIDs = df.iloc[6:, 0]
       dfMunicipio = df.iloc[6:, 1]
-      dfNota = df.iloc[6:, 34]
+      dfNota = df.iloc[6:, 84]
       dfIRCE = df.iloc[6:, 2]
       dfDCE = df.iloc[6:, 3]
 
@@ -444,7 +444,7 @@ def dashboard():
         'dce': dfDCE.values,
         'nota': dfNota.values
     }
-
+      print(novo_df)
       dfPlot = pd.DataFrame(novo_df)
       dfPlot = dfPlot.sort_values(by='nota', ascending=False)
       print(dfPlot.head(50))
@@ -502,7 +502,7 @@ async def show_loading_text():
 
 
 def save_file_and_refresh(file_modified):
-    wb.save(file_modified),
+    wb.save(file_modified)
     refresh_file(file_modified)
 
 def hide_loading_text():
