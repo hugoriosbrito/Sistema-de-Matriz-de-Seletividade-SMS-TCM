@@ -34,7 +34,7 @@ Para rodar localmente, siga essas instruções:
 Faça um clone ao repositório colando o comando abaixo no terminal:
 
 ```bash
-git clone https://github.com/TecHugoRios/Sistema-de-Gerenciamento-de-Indicadores-TCM
+git clone https://github.com/hugoriosbrito/Sistema-de-Gerenciamento-de-Indicadores-TCM
 ```
 
 <h3>Iniciando</h3>
